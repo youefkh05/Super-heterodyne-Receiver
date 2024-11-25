@@ -2,8 +2,9 @@ clear all;
 close all;
 clc;
 
-% Add the Functions folder to the MATLAB path temporarily
+% Add the Functions and Filters folder to the MATLAB path temporarily
 addpath('Functions');
+addpath('Filters');
 load RF_Band_Pass_Filter;
 
 % List of channel audio file names
@@ -67,3 +68,6 @@ saveChannelsAsWav(FDM, "ch_AM", "Channels\AM");
 %Plot the AM Modulate (DSB-SC) Signal
 plotChannelSpectrum(FDM);
 
+% Remove added paths
+rmpath('Functions');
+rmpath('Filters');
