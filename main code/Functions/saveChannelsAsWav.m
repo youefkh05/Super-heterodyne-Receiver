@@ -5,6 +5,8 @@ function saveChannelsAsWav(channels, filename, savePath)
     %   filename  - The base name for each saved file (e.g., 'audio_data')
     %   savePath  - The directory where the files should be saved
     
+    maxSamplingFreq=48e3; %the max for most laptops are 48kHz 
+    
     % Ensure the savePath exists, if not create the directory
     if ~exist(savePath, 'dir')
         mkdir(savePath);
@@ -16,9 +18,19 @@ function saveChannelsAsWav(channels, filename, savePath)
         outputFilename = fullfile(savePath, sprintf('%s_%d.wav', filename, i));
         
         % Get the audio data and sampling frequency from the AudioFile object
-        audioData = channels(i).AudioData;  % Assuming 'audioData' holds the raw audio data
-        samplingFreq = ceil(1000*channels(i).SamplingFrequency);  % Assuming 'SamplingFrequency' holds the sample rate
+        samplingFreq = ceil(1000*channels(i).SamplingFrequency);
         
+        %   Make sure to save it with the proper sample rate 
+        if(samplingFreq>maxSamplingFreq)
+            % Resample the audio data to the maximum sample frequency
+            audioData = resample(channels(i).AudioData, maxSamplingFreq, samplingFreq);
+            % Update the sampling frequency
+            samplingFreq=maxSamplingFreq;
+        else
+            %nothing changes
+            audioData = channels(i).AudioData;  % Assuming 'audioData' holds the raw audio data
+        end
+
         % Normalize the audio data to be within the range [-1, 1]
         audioData = audioData / max(abs(audioData));  % Normalize audio data
         

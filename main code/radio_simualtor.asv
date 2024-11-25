@@ -5,12 +5,10 @@ clc;
 % Add the Functions folder to the MATLAB path temporarily
 addpath('Functions');
 
-[audioData, fs] = audioread("Channels\Padded\ch_pad_3.wav");
 
-%{
 % Create an AudioFile object
 audioFile = AudioFile("Channels\Padded\ch_pad_3.wav");
-player = audioplayer(obj.AudioData, obj.SamplingFrequency);
+
 % Play the audio
 audioFile.playAudio();
 
@@ -21,7 +19,7 @@ getBandwidth(audioFile);
 pause(2);
 
 audioFile.pauseAudio();
-%}
+
 
 % List of channel audio file names
 fileNames = [...
@@ -53,8 +51,9 @@ channels = padAudioFiles(channels, maxLength, maxSamplingFreq);
 %play_channels(channels,4);
 
 %plot them and get the bandwidth 
-%we multiplay it by 3 to get more than the Nyquist frequency for safety
-Total_BW=3*plotChannelSpectrum(channels)+ length(channels)*50;
+%we multiplay it by 3.2 to get more than the Nyquist frequency for safety
+Total_BW=*plotChannelSpectrum(channels)+ (length(channels))*50;
+pause(3);
 close all;
 
 % Display total bandwidth across all channels

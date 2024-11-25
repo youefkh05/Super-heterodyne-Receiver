@@ -4,29 +4,6 @@ clc;
 
 % Add the Functions folder to the MATLAB path temporarily
 addpath('Functions');
-%{
-[audioData, fs] = audioread("Channels\Padded\ch_pad_3.wav");
-player = audioplayer(audioData, ceil(fs));
-play(player);
-pause(2);
-pause(player);
-%}
-
-%{
-% Create an AudioFile object
-audioFile = AudioFile("Channels\Padded\ch_pad_3.wav");
-
-% Play the audio
-audioFile.playAudio();
-
-% Print audio details
-audioFile.printAudio();
-getBandwidth(audioFile);
-
-pause(2);
-
-audioFile.pauseAudio();
-%}
 
 % List of channel audio file names
 fileNames = [...
@@ -55,11 +32,10 @@ fprintf('Max Audio Data Length (number of samples): %d\n', maxLength);
 %pad the files 
 channels = padAudioFiles(channels, maxLength, maxSamplingFreq);
 
-%play_channels(channels,4);
-
 %plot them and get the bandwidth 
-%we multiplay it by 3 to get more than the Nyquist frequency for safety
-Total_BW=3*plotChannelSpectrum(channels)+ length(channels)*50;
+%we multiplay it by 4 to get more than the Nyquist frequency for safety
+Total_BW=4*plotChannelSpectrum(channels)+ (length(channels))*60;
+pause(3);
 close all;
 
 % Display total bandwidth across all channels
@@ -78,6 +54,7 @@ end
 %save the padded files
 saveChannelsAsWav(channels, "ch_pad", "Channels\Padded");
 
+%plot the padded signals
 plotChannelSpectrum(channels);
 
 %AM Modulate (DSB-SC)
@@ -86,5 +63,6 @@ multiplexedchannels = AM_Modulate_DSB_SC(channels, maxLength, maxSamplingFreq );
 %save the AM Modulate file
 saveChannelsAsWav(multiplexedchannels, "ch_AM", "Channels\AM");
 
+%Plot the AM Modulate (DSB-SC) Signal
 plotChannelSpectrum(multiplexedchannels);
 
