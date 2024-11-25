@@ -1,36 +1,19 @@
 clear;
 clc;
 
+%
+% Open file selection dialog and filter for .wav files
+[file, path] = uigetfile('*.wav', 'Select a WAV file');
+disp(['Filename: ', file]);
+disp(['Filepath: ', path]);
 
-% Create an instance of the AudioFile class
-audio = AudioFile("Channels\Ch0_Short_BBCArabic2.wav");
-
-
-% Play the audio
-audio.playAudio();
-
-% Pause the audio after 5 seconds
-pause(5);
-audio.pauseAudio();
-
-% Print audio information and first 10 samples
-audio.printAudio();
-
-% Stop the audio
-audio.stopAudio();
-
-
-%{
-
-
-path="Channels\";
-file="Ch1_Short_FM9090.wav";
-
-
+if isequal(file, 0) % Check if user canceled the file dialog
+    disp('No file selected.');
+    return;
+end
 
 % Construct full file path
-%mp = fullfile(path, file);
-mp=path+file;
+mp = fullfile(path, file);
 
 % Read the audio file
 [oy, f] = audioread(mp);    
@@ -50,5 +33,3 @@ pause(5);
 % Stop the playback
 stop(om);
 disp('Playback stopped.');
-%}
-
