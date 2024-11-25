@@ -11,40 +11,59 @@ classdef AudioFile
             % Constructor method to initialize the object
             if nargin > 0
                 [audioData, fs] = audioread(filename);
+                
+                % Convert to mono if stereo
                 if size(audioData, 2) == 2
                     audioData = mean(audioData, 2); % Average the two channels
                 end
+                
                 obj.Filename = filename;
                 obj.SamplingFrequency = fs;
                 obj.AudioData = audioData;
                 obj.duration  = length(obj.AudioData) / obj.SamplingFrequency;
                 obj.player = audioplayer(obj.AudioData, obj.SamplingFrequency);
-                 % Convert to mono if stereo
-                
             end
         end
         
         function playAudio(obj)
             % Method to play the audio file
-            play(obj.player);
+            if ~isempty(obj.player)
+                play(obj.player);
+            else
+                disp('No audio data to play.');
+            end
         end
         
         function pauseAudio(obj)
             % Method to pause the audio file
-            pause(obj.player);
+            if ~isempty(obj.player)
+                pause(obj.player);
+            else
+                disp('No audio data to pause.');
+            end
         end
         
         function stopAudio(obj)
             % Method to stop the audio file
-            stop(obj.player);
+            if ~isempty(obj.player)
+                stop(obj.player);
+            else
+                disp('No audio data to stop.');
+            end
         end
         
         function printAudio(obj)
             % Method to print all the audio file data
-            disp(['Filename: ', obj.Filename]);
-            disp(['Sampling Frequency: ', num2str(obj.SamplingFrequency), ' Hz']);
-            disp(['Audio Duration: ', num2str(obj.duration), ' seconds']);
-            disp(obj.AudioData(1:10, :)); % Print the first 10 samples
+            if ~isempty(obj.AudioData)
+                disp(['Filename: ', obj.Filename]);
+                disp(['Sampling Frequency: ', num2str(obj.SamplingFrequency), ' Hz']);
+                disp(['Audio Duration: ', num2str(obj.duration), ' seconds']);
+                % Optional: Display first few samples of audio data
+                disp('First 10 samples of Audio Data:');
+                disp(obj.AudioData(1:10));
+            else
+                disp('No audio data to print.');
+            end
         end
         
         end
