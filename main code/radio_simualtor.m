@@ -11,18 +11,9 @@ fileNames = [...
 
 ChannelPath = "Channels\";
 
-% Initialize an array of AudioFile objects
-audioFiles = AudioFile.empty; % Start with an empty array
+channels=read_channels(fileNames,ChannelPath);
 
-% Loop through the file names to create AudioFile objects
-for i = 1:length(fileNames)
-    fullPath = ChannelPath + fileNames(i); % Build the full path
-    if isfile(fullPath) % Check if the file exists
-        audioFiles(i) = AudioFile(fullPath); % Append each file
-    else
-        warning('File not found: %s', fullPath); % Warn if the file does not exist
-    end
-end
+
 
 % Call the function to process the array
-processAudioFiles(audioFiles);
+Super_heterodyne_Receiver(channels);

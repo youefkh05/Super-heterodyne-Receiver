@@ -1,6 +1,6 @@
 
-% Super-heterodyne-Receiver.m
-function processAudioFiles(audioFiles)
+% Super_heterodyne_Receiver.m
+function Super_heterodyne_Receiver(audioFiles)
     % Function to process an array of AudioFile objects
     % Parameters:
     %   audioFiles - Array of AudioFile objects

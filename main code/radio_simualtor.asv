@@ -1,7 +1,7 @@
-clear;
+clear all;
 clc;
 
-% List of channel audio file names
+
 % List of channel audio file names
 fileNames = [...
     "Ch0_Short_BBCArabic2.wav", ...
@@ -10,12 +10,11 @@ fileNames = [...
     "Ch3_Short_RussianVoice.wav", ...
     "Ch4_Short_SkyNewsArabia.wav"];
 
-ChannelPath     =   "Channels\";
+ChannelPath = "Channels\";
 
 % Initialize an array of AudioFile objects
 audioFiles = AudioFile.empty; % Start with an empty array
 
-% Loop through the file names to create AudioFile objects
 % Loop through the file names to create AudioFile objects
 for i = 1:length(fileNames)
     fullPath = ChannelPath + fileNames(i); % Build the full path
@@ -26,11 +25,5 @@ for i = 1:length(fileNames)
     end
 end
 
-% Access and use the array
-for i = 1:length(audioFiles)
-    fprintf('Audio File %d Details:\n', i);
-    audioFiles(i).printAudio(); % Print details of each file
-    audioFiles(i).playAudio();  % Play each file
-    pause(2);                   % Short delay between files
-    audioFiles(i).stopAudio();  % Stop the playback
-end
+% Call the function to process the array
+Super_heterodyne_Receiver(audioFiles);
