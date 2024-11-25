@@ -14,12 +14,12 @@ classdef AudioFile
                 
                 % Convert to mono if stereo
                 if size(audioData, 2) == 2
-                    audioData = mean(audioData, 2); % Average the two channels
+                    mono_audioData = sum(audioData, 2); % Sum the two channels to get a mono signal
                 end
                 
                 obj.Filename = filename;
                 obj.SamplingFrequency = fs;
-                obj.AudioData = audioData;
+                obj.AudioData = mono_audioData;
                 obj.duration  = length(obj.AudioData) / obj.SamplingFrequency;
                 obj.player = audioplayer(obj.AudioData, obj.SamplingFrequency);
             end

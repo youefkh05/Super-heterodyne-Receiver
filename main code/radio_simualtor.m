@@ -2,7 +2,7 @@ clear all;
 clc;
 
 % Add the Functions folder to the MATLAB path temporarily
-addpath('D:/project/Communication Radio/Super-heterodyne-Receiver/main code/Functions');
+addpath('Functions');
 
 % List of channel audio file names
 fileNames = [...
@@ -19,5 +19,15 @@ channels=read_channels(fileNames,ChannelPath);
 print_channels_data(channels);
 
 
-% Call the function to process the array
-Super_heterodyne_Receiver(channels);
+[maxDuration, maxSamplingFreq, maxLength] = getMaxAudioInfo(channels);
+
+% Display the results
+fprintf('Max Duration: %.2f seconds\n', maxDuration);
+fprintf('Max Sampling Frequency: %.2f Hz\n', maxSamplingFreq);
+fprintf('Max Audio Data Length (number of samples): %d\n', maxLength);
+
+channels = padAudioFiles(channels, maxLength, maxSamplingFreq);
+
+%play_channels(channels,4);
+
+saveChannelsAsWav(channels, "ch_pad", "Channels\Padded");

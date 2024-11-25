@@ -1,6 +1,6 @@
 % print_channels_data.m
 function print_channels_data(channels)
-    % Function to process an array of AudioFile objects
+
     % Parameters:
     %   channels - Array of AudioFile objects
 
