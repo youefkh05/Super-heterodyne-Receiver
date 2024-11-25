@@ -17,7 +17,7 @@ function saveChannelsAsWav(channels, filename, savePath)
         
         % Get the audio data and sampling frequency from the AudioFile object
         audioData = channels(i).AudioData;  % Assuming 'audioData' holds the raw audio data
-        samplingFreq = channels(i).SamplingFrequency;  % Assuming 'SamplingFrequency' holds the sample rate
+        samplingFreq = ceil(1000*channels(i).SamplingFrequency);  % Assuming 'SamplingFrequency' holds the sample rate
         
         % Normalize the audio data to be within the range [-1, 1]
         audioData = audioData / max(abs(audioData));  % Normalize audio data

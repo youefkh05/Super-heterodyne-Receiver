@@ -1,7 +1,7 @@
 classdef AudioFile
     properties
         Filename          % Name of the file
-        SamplingFrequency % Sampling frequency of the audio
+        SamplingFrequency % Sampling frequency of the audio (in kHz)
         AudioData         % Actual audio data
         duration          % File length
         player            % Object to play the sound file  
@@ -24,6 +24,7 @@ classdef AudioFile
                 obj.AudioData = mono_audioData;
                 obj.duration  = length(obj.AudioData) / obj.SamplingFrequency;
                 obj.player = audioplayer(obj.AudioData, obj.SamplingFrequency);
+                obj.SamplingFrequency = fs/1000;
             end
         end
         
@@ -58,7 +59,7 @@ classdef AudioFile
             % Method to print all the audio file data
             if ~isempty(obj.AudioData)
                 disp(['Filename: ', obj.Filename]);
-                disp(['Sampling Frequency: ', num2str(obj.SamplingFrequency), ' Hz']);
+                disp(['Sampling Frequency: ', num2str(obj.SamplingFrequency), ' kHz']);
                 disp(['Audio Duration: ', num2str(obj.duration), ' seconds']);
                 % Optional: Display first few samples of audio data
                 %disp('First 10 samples of Audio Data:');

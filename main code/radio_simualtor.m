@@ -4,7 +4,15 @@ clc;
 
 % Add the Functions folder to the MATLAB path temporarily
 addpath('Functions');
+%{
+[audioData, fs] = audioread("Channels\Padded\ch_pad_3.wav");
+player = audioplayer(audioData, ceil(fs));
+play(player);
+pause(2);
+pause(player);
+%}
 
+%{
 % Create an AudioFile object
 audioFile = AudioFile("Channels\Padded\ch_pad_3.wav");
 
@@ -18,11 +26,7 @@ getBandwidth(audioFile);
 pause(2);
 
 audioFile.pauseAudio();
-
-
-
-
-
+%}
 
 % List of channel audio file names
 fileNames = [...
@@ -45,7 +49,7 @@ print_channels_data(channels);
 
 % Display the results
 fprintf('Max Duration: %.2f seconds\n', maxDuration);
-fprintf('Max Sampling Frequency: %.2f Hz\n', maxSamplingFreq);
+fprintf('Max Sampling Frequency: %.2f kHz\n', maxSamplingFreq);
 fprintf('Max Audio Data Length (number of samples): %d\n', maxLength);
 
 %pad the files 
@@ -55,16 +59,16 @@ channels = padAudioFiles(channels, maxLength, maxSamplingFreq);
 
 %plot them and get the bandwidth 
 %we multiplay it by 3 to get more than the Nyquist frequency for safety
-Total_BW=2.3*plotChannelSpectrum(channels)+ length(channels)*25e+03;
+Total_BW=3*plotChannelSpectrum(channels)+ length(channels)*50;
 close all;
 
 % Display total bandwidth across all channels
-fprintf('Total Bandwidth: %.2f Hz\n', Total_BW);
+fprintf('Total Bandwidth: %.2f kHz\n', Total_BW);
 
-if Total_BW>=maxSamplingFreq/1000
+if Total_BW>=maxSamplingFreq
     %we gonna resample the audio files
     maxSamplingFreq=Total_BW;
-    fprintf('Max Sampling Frequency: %.2f Hz\n', maxSamplingFreq);
+    fprintf('Max Sampling Frequency: %.2f kHz\n', maxSamplingFreq);
     channels = padAudioFiles(channels, maxLength, maxSamplingFreq);
     
     %check the new max length and frequency

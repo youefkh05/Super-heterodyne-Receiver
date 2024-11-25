@@ -7,8 +7,8 @@ function multiplexed_Audio_Signal = AM_Modulate_DSB_SC(channels, Length, sampleF
     %   multiplexedSignal - Combined FDM signal
     
     % Parameters for modulation
-    baseCarrierFreq = 100e+03; % Base carrier frequency in kHz
-    deltaFreq = 50e+03;        % Frequency increment between carriers in kHz
+    baseCarrierFreq = 100; % Base carrier frequency in kHz
+    deltaFreq = 50;        % Frequency increment between carriers in kHz
 
     % Time vector based on the sample frequency and signal length
     %Length = max(cellfun(@length, channels)); % Ensure all signals are the same length

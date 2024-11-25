@@ -20,7 +20,7 @@ function paddedAudioFiles = padAudioFiles(audioFiles, maxLength, maxSamplingFreq
             % Resample the audio data to the maximum sample frequency
             newAudioData = resample(audioFiles(i).AudioData, maxSamplingFreq, ceil(1000*audioFiles(i).SamplingFrequency));
             % Update the sampling frequency
-            paddedAudioFiles(i).SamplingFrequency = maxSamplingFreq/1000;
+            paddedAudioFiles(i).SamplingFrequency = maxSamplingFreq;
             paddedAudioFiles(i).AudioData = newAudioData;
            
         end
@@ -30,7 +30,7 @@ function paddedAudioFiles = padAudioFiles(audioFiles, maxLength, maxSamplingFreq
         if audioDataLength < maxLength
             % Pad with zeros to the right of the audio data
             paddedAudioFiles(i).AudioData(audioDataLength+1:maxLength) = 0;
-            paddedAudioFiles(i).duration  = 0.001*length(paddedAudioFiles(i).AudioData) / paddedAudioFiles(i).SamplingFrequency;
+            paddedAudioFiles(i).duration  = 0.001length(paddedAudioFiles(i).AudioData) / paddedAudioFiles(i).;
         end
     end
 end
