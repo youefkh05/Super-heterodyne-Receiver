@@ -37,7 +37,8 @@ function multiplexed_Audio_Signal = AM_Modulate_DSB_SC(channels, Length, sampleF
     end
     
     %same information
-    multiplexed_Audio_Signal=AudioFile("Channels\Padded\ch_pad_3.wav"); 
+    multiplexed_Audio_Signal                   = AudioFile("Channels\Padded\ch_pad_3.wav"); 
+    multiplexed_Audio_Signal.SamplingFrequency = sampleFreq;
     multiplexedSignal=transpose(multiplexedSignal);
     multiplexed_Audio_Signal.AudioData=multiplexedSignal;
 end

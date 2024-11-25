@@ -4,6 +4,7 @@ clc;
 
 % Add the Functions folder to the MATLAB path temporarily
 addpath('Functions');
+load RF_Band_Pass_Filter;
 
 % List of channel audio file names
 fileNames = [...
@@ -33,8 +34,8 @@ fprintf('Max Audio Data Length (number of samples): %d\n', maxLength);
 channels = padAudioFiles(channels, maxLength, maxSamplingFreq);
 
 %plot them and get the bandwidth 
-%we multiplay it by 4 to get more than the Nyquist frequency for safety
-Total_BW=4*plotChannelSpectrum(channels)+ (length(channels))*60;
+%we multiplay it by 7 to get more than the Nyquist frequency for safety
+Total_BW=7*plotChannelSpectrum(channels);
 pause(3);
 close all;
 
@@ -58,11 +59,11 @@ saveChannelsAsWav(channels, "ch_pad", "Channels\Padded");
 plotChannelSpectrum(channels);
 
 %AM Modulate (DSB-SC)
-multiplexedchannels = AM_Modulate_DSB_SC(channels, maxLength, maxSamplingFreq );
+FDM = AM_Modulate_DSB_SC(channels, maxLength, maxSamplingFreq );
 
 %save the AM Modulate file
-saveChannelsAsWav(multiplexedchannels, "ch_AM", "Channels\AM");
+saveChannelsAsWav(FDM, "ch_AM", "Channels\AM");
 
 %Plot the AM Modulate (DSB-SC) Signal
-plotChannelSpectrum(multiplexedchannels);
+plotChannelSpectrum(FDM);
 
