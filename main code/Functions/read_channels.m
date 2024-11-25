@@ -1,4 +1,4 @@
-
+% read_channels.m
 function [channels] = read_channels(fileNames,ChannelPath)
 % Initialize an array of AudioFile objects
 channels = AudioFile.empty; % Start with an empty array
