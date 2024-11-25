@@ -15,6 +15,8 @@ classdef AudioFile
                 % Convert to mono if stereo
                 if size(audioData, 2) == 2
                     mono_audioData = sum(audioData, 2); % Sum the two channels to get a mono signal
+                else
+                    mono_audioData = audioData;
                 end
                 
                 obj.Filename = filename;
@@ -59,8 +61,8 @@ classdef AudioFile
                 disp(['Sampling Frequency: ', num2str(obj.SamplingFrequency), ' Hz']);
                 disp(['Audio Duration: ', num2str(obj.duration), ' seconds']);
                 % Optional: Display first few samples of audio data
-                disp('First 10 samples of Audio Data:');
-                disp(obj.AudioData(1:10));
+                %disp('First 10 samples of Audio Data:');
+                %disp(obj.AudioData(1:10));
             else
                 disp('No audio data to print.');
             end

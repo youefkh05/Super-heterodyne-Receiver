@@ -11,6 +11,7 @@ function paddedAudioFiles = padAudioFiles(audioFiles, maxLength, maxSamplingFreq
     %   paddedAudioFiles - Array of AudioFile objects with padded and resampled data
 
     paddedAudioFiles = audioFiles; % Start with the original array of audio files
+    maxSamplingFreq  = ceil(maxSamplingFreq);
     
     % Loop through each AudioFile object
     for i = 1:length(audioFiles)
