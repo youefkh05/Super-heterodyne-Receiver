@@ -31,3 +31,5 @@ channels = padAudioFiles(channels, maxLength, maxSamplingFreq);
 %play_channels(channels,4);
 
 saveChannelsAsWav(channels, "ch_pad", "Channels\Padded");
+
+plotChannelSpectrum(channels);
