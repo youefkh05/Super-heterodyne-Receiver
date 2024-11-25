@@ -1,8 +1,12 @@
 clear;
 clc;
 
+
 % Open file selection dialog and filter for .wav files
 [file, path] = uigetfile('*.wav', 'Select a WAV file');
+disp(['Filename: ', file]);
+disp(['Filepath: ', path]);
+
 if isequal(file, 0) % Check if user canceled the file dialog
     disp('No file selected.');
     return;
@@ -19,6 +23,9 @@ om = audioplayer(oy, f);
 
 % Play the audio
 play(om);
+ % Display the sampling frequency
+fprintf('The sampling frequency of the selected audio file is %d Hz.\n', f);
+
 
 % Pause for 5 seconds (or adjust based on the length of your audio)
 pause(5);
