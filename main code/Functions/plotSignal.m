@@ -1,3 +1,0 @@
-function plotSignal(AudioFile)
-
-end

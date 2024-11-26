@@ -1,4 +1,4 @@
-function RF_BPF = createBandPassFilter(Fc, Fs, DeltaF)
+function RF_BPF = createBandPassFilter(Fc, Fs, DeltaF,FilterOrder)
     % createBandPassFilter - Designs a tunable band-pass filter
     %
     % Syntax:
@@ -15,8 +15,6 @@ function RF_BPF = createBandPassFilter(Fc, Fs, DeltaF)
     % Add the Functions and Filters folder to the MATLAB path temporarily
     addpath('Filters');
     
-    % Filter parameters
-    FilterOrder = 40;  % Filter order
     
     % Normalized frequency edges (relative to Nyquist frequency Fs/2)
     F3dB1 = (Fc - DeltaF) / (Fs/2);  % Lower 3-dB cutoff frequency

@@ -68,29 +68,27 @@ saveChannelsAsWav(FDM, "ch_AM", "Channels\AM");
 %Plot the AM Modulate (DSB-SC) Signal
 plotChannelSpectrum(FDM);
 
-channelNumber = input('Enter the channel number (1-5): ');
-if ~ismember(channelNumber, 1:5)
-    error('Invalid channel number. Please choose a number between 1 and 5.');
-end
-
-
 % Filter parameters
-FilterOrder = 40;      % Filter order
-Fc = 100e3 + (channelNumber - 1)*50e3;            % Carrier frequency (Hz)
+Fc = 100e3 ;            % Carrier frequency (Hz)
+fDelta=50e3;            % Channels Distance
 Fs=ceil(1000*maxSamplingFreq);
-DeltaF = 20e3;         % Bandwidth (Hz)
+Channel_BandWidth = 40e3;         % Bandwidth (Hz)
 
-RF_BPF = createBandPassFilter(Fc, ceil(1000*maxSamplingFreq), DeltaF);
-
-% Visualize the new filter
-fprintf('You selected Channel %d with carrier frequency %.1f kHz.\n', channelNumber, Fc / 1e3);
-fvtool(RF_BPF)  % Frequency response for new carrier frequency
+% Signals Parameters
+maxChannelNumber = 5;
 
 % Filter to get the channel desired
-FDM_Filter = filter_audio_file(FDM,RF_BPF);
+[FDM_IF_Filter,ChannelNumber, RF_BPF] = ...
+    choose_channel(FDM,maxChannelNumber, Fc, fDelta, ...
+                   Channel_BandWidth,Fs);
+
+% Visualize the new filter
+fprintf('You selected Channel %d with carrier frequency %.1f kHz.\n', ChannelNumber, Fc / 1e3);
+fvtool(RF_BPF)  % Frequency response for new carrier frequency
+
 
 %Plot the Filter AM Modulate (DSB-SC) Signal
-plotChannelSpectrum(FDM_Filter);
+plotChannelSpectrum(FDM_IF_Filter);
 
 
 % Remove added paths
