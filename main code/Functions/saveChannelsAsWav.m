@@ -16,6 +16,7 @@ function saveChannelsAsWav(channels, filename, savePath)
     for i = 1:length(channels)
         % Create the output filename for each channel (e.g., 'audio_data_1.wav')
         outputFilename = fullfile(savePath, sprintf('%s_%d.wav', filename, i));
+        channels(i).Filename=outputFilename;
         
         % Get the audio data and sampling frequency from the AudioFile object
         samplingFreq = ceil(1000*channels(i).SamplingFrequency);
