@@ -9,9 +9,9 @@ load RF_Band_Pass_Filter;
 
 % List of channel audio file names
 fileNames = [...
-    "Ch0_Short_BBCArabic2.wav", ...
+    "Ch0_Short_QuranPalestine.wav", ... 
     "Ch1_Short_FM9090.wav", ...
-    "Ch2_Short_QuranPalestine.wav", ...
+    "Ch2_Short_BBCArabic2.wav", ...
     "Ch3_Short_RussianVoice.wav", ...
     "Ch4_Short_SkyNewsArabia.wav"];
 
@@ -62,6 +62,20 @@ plotChannelSpectrum(channels);
 %AM Modulate (DSB-SC)
 FDM = AM_Modulate_DSB_SC(channels, maxLength, maxSamplingFreq );
 
+%Add noise (Optional)
+Noise = input('Do you Want to add noise?\n Yes: y  No: anything else \n', 's'); % Specify 's' for string input
+ 
+%check Noise
+if Noise == "y"
+    % Get user input SNR
+    SNR_dB = input(["How Much SNR (db) ?\n"]);
+    
+    %add the noise
+    fprintf('Adding Noise ...\n');
+    Fs=ceil(1000*maxSamplingFreq);
+    FDM = addNoiseToAudio(FDM, SNR_dB, Fs);
+end
+
 %save the AM Modulate file
 saveChannelsAsWav(FDM, "ch_AM", "Channels\AM");
 
@@ -80,11 +94,18 @@ maxChannelNumber = 5;
 % Filter to get the channel desired
 [FDM_RF_Filter,ChannelNumber, Channel_Frequency, RF_BPF] = ...
     choose_channel(FDM,maxChannelNumber, Fc, fDelta, ...
-                   Channel_BandWidth,Fs);
-
-% Visualize the new filter
-fprintf('You selected Channel %d with carrier frequency %.1f kHz.\n', ChannelNumber, Channel_Frequency / 1e3);
-fvtool(RF_BPF)  % Frequency response for new carrier frequency
+                 Channel_BandWidth,Fs);
+             
+%Remove RF Fiter (Optional)             
+RF_Filter =  input("Do you Want to add RF Filter?\n"+...
+"Yes: y  No: anything else \n", 's'); % Specify 's' for string input
+if RF_Filter == "y"
+    % Visualize the new filter
+    fprintf('You selected Channel %d with carrier frequency %.1f kHz.\n', ChannelNumber, Channel_Frequency / 1e3);
+    fvtool(RF_BPF)  % Frequency response for new carrier frequency
+else
+    FDM_RF_Filter = FDM;
+end
 
 
 %Plot And save the Filter AM Modulate (DSB-SC) Signal
@@ -99,8 +120,9 @@ IF_Channel =   mixer(FDM_RF_Filter, Channel_Frequency, WIF,Fs);
 [IF_Channel_Filtered,IF_BPF]      =   ...
     if_stage(IF_Channel, WIF,Channel_BandWidth,Fs);
 
+
 % Frequency response for IF Band Pass Fileter
-fvtool(IF_BPF)  
+fvtool(IF_BPF); 
 
 %Plot and save the IF_Channel Signal
 plotChannelSpectrum(IF_Channel_Filtered);
@@ -109,9 +131,14 @@ saveChannelsAsWav(IF_Channel_Filtered, "IF_Channel", "Channels\IF");
 %Bass Band Stage
 [Bass_Band_Channel, Bass_Band_Filter] = baseband_detection(IF_Channel_Filtered, WIF, Fs);
 
+% Frequency response for Bass_Band Low Pass Fileter
+fvtool(Bass_Band_Filter); 
+
 %Plot and save the Bass_Band_Channel Signal
 plotChannelSpectrum(Bass_Band_Channel);
 saveChannelsAsWav(Bass_Band_Channel, "Bass_Band_Channel", "Channels\Bass_Band");
+
+
 
 % Remove added paths
 rmpath('Functions');

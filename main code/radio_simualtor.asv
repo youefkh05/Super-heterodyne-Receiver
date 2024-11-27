@@ -62,6 +62,20 @@ plotChannelSpectrum(channels);
 %AM Modulate (DSB-SC)
 FDM = AM_Modulate_DSB_SC(channels, maxLength, maxSamplingFreq );
 
+%Add noise (Optional)
+Noise = input('Do you Want to add noise?\n Yes: y  No: anything else \n', 's'); % Specify 's' for string input
+ 
+%check Noise
+if Noise == "y"
+    % Get user input SNR
+    SNR_dB = input(["How Much SNR (db) ?\n"]);
+    
+    %add the noise
+    fprintf('Adding Noise ...\n');
+    Fs=ceil(1000*maxSamplingFreq);
+    FDM = addNoiseToAudio(FDM, SNR_dB, Fs);
+end
+
 %save the AM Modulate file
 saveChannelsAsWav(FDM, "ch_AM", "Channels\AM");
 
@@ -78,10 +92,10 @@ Channel_BandWidth = 40e3;         % Bandwidth (Hz)
 maxChannelNumber = 5;
 
 % Filter to get the channel desired
-[FDM_RF_Filter,ChannelNumber, Channel_Frequency, RF_BPF] = ...
-    choose_channel(FDM,maxChannelNumber, Fc, fDelta, ...
-                   Channel_BandWidth,Fs);
-
+%[FDM_RF_Filter,ChannelNumber, Channel_Frequency, RF_BPF] = ...
+ %   choose_channel(FDM,maxChannelNumber, Fc, fDelta, ...
+  %                 Channel_BandWidth,Fs);
+FDM_RF_Filter = FDM;
 % Visualize the new filter
 fprintf('You selected Channel %d with carrier frequency %.1f kHz.\n', ChannelNumber, Channel_Frequency / 1e3);
 fvtool(RF_BPF)  % Frequency response for new carrier frequency
@@ -97,19 +111,26 @@ IF_Channel =   mixer(FDM_RF_Filter, Channel_Frequency, WIF,Fs);
 
 %IF Filter
 [IF_Channel_Filtered,IF_BPF]      =   ...
-    if_stage(IF_Channel, WIF,Channel_BandWidth,Fs);
+ %   if_stage(IF_Channel, WIF,Channel_BandWidth,Fs);
+
 
 % Frequency response for IF Band Pass Fileter
-fvtool(IF_BPF)  
+fvtool(IF_BPF); 
 
 %Plot and save the IF_Channel Signal
 plotChannelSpectrum(IF_Channel_Filtered);
-saveChannelsAsWav(IF_Channel_Filtered, "ch_IF_Channel", "Channels\IF");
+saveChannelsAsWav(IF_Channel_Filtered, "IF_Channel", "Channels\IF");
 
 %Bass Band Stage
 [Bass_Band_Channel, Bass_Band_Filter] = baseband_detection(IF_Channel_Filtered, WIF, Fs);
 
-%Plot and save the IF_Channel Signal
+% Frequency response for Bass_Band Low Pass Fileter
+fvtool(Bass_Band_Filter); 
+
+%Plot and save the Bass_Band_Channel Signal
+plotChannelSpectrum(Bass_Band_Channel);
+saveChannelsAsWav(Bass_Band_Channel, "Bass_Band_Channel", "Channels\Bass_Band");
+
 
 
 % Remove added paths
