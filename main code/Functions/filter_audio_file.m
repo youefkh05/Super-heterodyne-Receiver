@@ -10,6 +10,7 @@ function [filtered_file] = filter_audio_file(audio_file_in,filter_in)
     sampling_freq = audio_file_in.SamplingFrequency * 1000; % Convert kHz to Hz
 
     audio_signal_out=filter(filter_in, audio_file_in.AudioData);
+    
     % Update the filtered object's properties
     filtered_file.AudioData = audio_signal_out;
     filtered_file.player = audioplayer(audio_signal_out, sampling_freq); % Update player

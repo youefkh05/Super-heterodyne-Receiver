@@ -1,8 +1,8 @@
-function RF_BPF = createBandPassFilter(Fc, Fs, DeltaF,FilterOrder)
+function BPF = createBandPassFilter(Fc, Fs, DeltaF,FilterOrder)
     % createBandPassFilter - Designs a tunable band-pass filter
     %
     % Syntax:
-    %   RF_BPF = createBandPassFilter(Fc, Fs, DeltaF)
+    %   BPF = createBandPassFilter(Fc, Fs, DeltaF)
     %
     % Inputs:
     %   Fc - Carrier frequency (Hz)
@@ -10,7 +10,7 @@ function RF_BPF = createBandPassFilter(Fc, Fs, DeltaF,FilterOrder)
     %   DeltaF - Bandwidth (Hz)
     %
     % Output:
-    %   RF_BPF - Designed band-pass filter object
+    %   BPF - Designed band-pass filter object
     
     % Add the Functions and Filters folder to the MATLAB path temporarily
     addpath('Filters');
@@ -26,16 +26,16 @@ function RF_BPF = createBandPassFilter(Fc, Fs, DeltaF,FilterOrder)
     end
     
     % Create the filter specification object
-    RF_BPF_Spec = fdesign.bandpass('N,F3dB1,F3dB2', FilterOrder, F3dB1, F3dB2);
+    BPF_Spec = fdesign.bandpass('N,F3dB1,F3dB2', FilterOrder, F3dB1, F3dB2);
     
     % Design the filter
-    RF_BPF = design(RF_BPF_Spec, 'butter');
+    BPF = design(BPF_Spec, 'butter');
     
     % Save the filter for future use
-    save('Filters\RF_Band_Pass_Filter.mat', 'RF_BPF_Spec', 'RF_BPF');
+    save('Filters\RF_Band_Pass_Filter.mat', 'BPF_Spec', 'BPF');
     disp('Band-pass filter successfully created and saved.');
     
     % Visualize the filter's frequency response (optional)
-    %fvtool(RF_BPF);
+    %fvtool(BPF);
     
 end

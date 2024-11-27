@@ -104,14 +104,13 @@ fvtool(IF_BPF)
 
 %Plot and save the IF_Channel Signal
 plotChannelSpectrum(IF_Channel_Filtered);
-saveChannelsAsWav(IF_Channel_Filtered, "IF_Channel", "Channels\IF");
+saveChannelsAsWav(IF_Channel_Filtered, "ch_IF_Channel", "Channels\IF");
 
 %Bass Band Stage
 [Bass_Band_Channel, Bass_Band_Filter] = baseband_detection(IF_Channel_Filtered, WIF, Fs);
 
-%Plot and save the Bass_Band_Channel Signal
-plotChannelSpectrum(Bass_Band_Channel);
-saveChannelsAsWav(Bass_Band_Channel, "Bass_Band_Channel", "Channels\Bass_Band");
+%Plot and save the IF_Channel Signal
+
 
 % Remove added paths
 rmpath('Functions');
