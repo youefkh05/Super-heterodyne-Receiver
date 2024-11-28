@@ -114,12 +114,26 @@ saveChannelsAsWav(FDM_RF_Filter, "ch_RF_Filter", "Channels\RF");
 
 %IF Stage
 WIF = 25e3;  %   25kHz as intended
-IF_Channel =   mixer(FDM_RF_Filter, Channel_Frequency, WIF,Fs);
+
+%Add offset (Optional)
+offset = input('Do you Want to add offset?\n Yes: y  No: anything else \n', 's'); % Specify 's' for string input
+ 
+%check offset
+if offset == "y"
+    % Get user input offset
+    offset_frequency = input(["What's your offset (hz) ?\n"]);
+    
+    %add the offset
+    fprintf('Adding Offset ...\n');
+    IF_Channel = mixer(FDM_RF_Filter, Channel_Frequency, WIF + offset_frequency,Fs);  
+else
+    %no offset
+    IF_Channel = mixer(FDM_RF_Filter, Channel_Frequency, WIF ,Fs);  
+end
 
 %IF Filter
 [IF_Channel_Filtered,IF_BPF]      =   ...
     if_stage(IF_Channel, WIF,Channel_BandWidth,Fs);
-
 
 % Frequency response for IF Band Pass Fileter
 fvtool(IF_BPF); 
@@ -137,7 +151,6 @@ fvtool(Bass_Band_Filter);
 %Plot and save the Bass_Band_Channel Signal
 plotChannelSpectrum(Bass_Band_Channel);
 saveChannelsAsWav(Bass_Band_Channel, "Bass_Band_Channel", "Channels\Bass_Band");
-
 
 
 % Remove added paths
