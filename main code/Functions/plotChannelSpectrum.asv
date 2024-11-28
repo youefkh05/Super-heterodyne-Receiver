@@ -1,21 +1,14 @@
-function [sum_BW] = plotChannelSpectrum(channels, signalName, includeIndex)
+function [sum_BW]   =   plotChannelSpectrum(channels)
     % Function to plot the spectrum of each audio channel.
     % Parameters:
     %   channels - Array of AudioFile objects (audio channels)
-    %   signalName - Name to use in the titles (e.g., 'Audio Signal')
-    %   includeIndex - Boolean flag to include the index in the titles
-    
-    % Default values for optional parameters
-    if nargin < 2 || isempty(signalName)
-        signalName = 'Channel'; % Default signal name
-    end
-    if nargin < 3 || isempty(includeIndex)
-        includeIndex = true; % Default to include index
-    end
     
     % Define a set of colors to use for the plots
     colors = lines(length(channels));  % Generate 'length(channels)' distinct colors
     sum_BW=0; % Initialize total bandwidth
+    
+    % Get time and frequency vectors
+    %N = length(channels(1).audioData);      % Number of samples
     
     % Create a new figure for combined plots
     figure;
@@ -39,28 +32,18 @@ function [sum_BW] = plotChannelSpectrum(channels, signalName, includeIndex)
         fftShifted = fftshift(fftData);           % Shift zero frequency to the center
         magnitudeCentered = abs(fftShifted) / n; % Normalize magnitude
        
-        % Generate titles based on input parameters
-        if includeIndex == 1
-            timeTitle = sprintf('Time Domain - %s %d', signalName, i);
-            freqTitle = sprintf('Frequency Spectrum - %s %d', signalName, i);
-        else
-            timeTitle = sprintf('Time Domain - %s', signalName);
-            freqTitle = sprintf('Frequency Spectrum - %s', signalName);
-        end
-        
-        % Time-domain plot
-        subplot(length(channels), 2, 2*i-1); % Left column for time-domain
-        plot(t, audioData, 'Color', colors(i, :));
-        title(timeTitle, 'FontSize', 12);
-        xlabel('Time (s)', 'FontSize', 10);
+        % Determine subplot position
+        subplot(length(channels), 2, i); % Time-domain plot in the first row
+        plot(t , audioData, 'Color', colors(i, :));
+        title(sprintf('Time Domain - Channel %d', i), 'FontSize', 12);
+        xlabel('Time (ms)', 'FontSize', 10);
         ylabel('Amplitude', 'FontSize', 10);
         grid on;
         
-        % Frequency-domain plot
-        subplot(length(channels), 2, 2*i); % Right column for frequency-domain
-        plot(f, magnitudeCentered, 'Color', colors(i, :));
-        title(freqTitle, 'FontSize', 12);
-        xlabel('Frequency (Hz)', 'FontSize', 10);
+        subplot(length(channels), 2, length(channels) + i); % Frequency-domain plot in the second row
+        plot(f / 1000, magnitudeCentered, 'Color', colors(i, :));
+        title(sprintf('Frequency Spectrum - Channel %d', i), 'FontSize', 12);
+        xlabel('Frequency (kHz)', 'FontSize', 10);
         ylabel('Magnitude', 'FontSize', 10);
         grid on;
 
