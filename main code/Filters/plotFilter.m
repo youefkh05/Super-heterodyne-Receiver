@@ -8,9 +8,6 @@ function plotFilter(Filter, Fs, titleStr)
     % Open fvtool without title
     h = fvtool(Filter, 'Fs', Fs);
 
-    % Pause to allow fvtool to render the figure
-    pause(0.5);  % Adjust if needed based on your system's speed
-
     % Get the position of the figure to place the annotation
     figPos = get(h, 'Position');  % Get the figure's position [left, bottom, width, height]
 
