@@ -49,7 +49,7 @@ if Total_BW>=maxSamplingFreq
 end
 
 % Save padded audio files
-saveChannelsAsWav(channels, "ch_pad", "Channels\Padded");
+channels=saveChannelsAsWav(channels, "ch_pad", "Channels\Padded");
 plotChannelSpectrum(channels, "Padded Channel", 1);         % Visualize padded signals
 
 % Step 4: AM Modulation (DSB-SC)
@@ -68,7 +68,7 @@ if Noise == "y"
 end
 
 % Save and plot the modulated signal
-saveChannelsAsWav(AM_Modulated_Signal, "ch_AM", "Channels\AM");
+AM_Modulated_Signal=saveChannelsAsWav(AM_Modulated_Signal, "ch_AM", "Channels\AM");
 plotChannelSpectrum(AM_Modulated_Signal, "AM DSB SC", 0);
 
 % Step 5: RF Stage - Select a Channel
@@ -103,7 +103,7 @@ end
 WIF = 25e3;  % Intermediate Frequency (IF) in Hz
 
 % Optional Step: Add offset to IF
-offset = input('Do you Want to add offset?\n Yes: y  No: anything else \n', 's'); % Specify 's' for string input
+offset = input('Do you Want to add offset?\n Yes: y  No: anything else \n', 's'); 
 if offset == "y"
     % Get user input offset
     offset_frequency = input(["What's your offset (hz) ?\n"]);
@@ -133,13 +133,17 @@ plotFilter(Bass_Band_Filter, Fs, "Frequency Response of Bass Band Low Pass Filte
 plotReceiver(AM_Modulated_Signal_RF_Filter, IF_Channel_Filtered, Bass_Band_Channel);
 
 %Save as Wav
-saveChannelsAsWav(AM_Modulated_Signal_RF_Filter, "ch_RF_Filter", "Channels\RF");
-saveChannelsAsWav(IF_Channel_Filtered, "IF_Channel", "Channels\IF");
-saveChannelsAsWav(Bass_Band_Channel, "Bass_Band_Channel", "Channels\Bass_Band");
+AM_Modulated_Signal_RF_Filter=saveChannelsAsWav(AM_Modulated_Signal_RF_Filter, "ch_RF_Filter", "Channels\RF");
+IF_Channel_Filtered=saveChannelsAsWav(IF_Channel_Filtered, "IF_Channel", "Channels\IF");
+Bass_Band_Channel=saveChannelsAsWav(Bass_Band_Channel, "Bass_Band_Channel", "Channels\Bass_Band");
 
-% Clean up paths
-rmpath('Functions');
-rmpath('Filters');
+% Optional Step: Listening to Bass Band
+Bass_Band_play = input('Do you Want to listen the received channel?\n Yes: y  No: anything else \n', 's');
+if Bass_Band_play  == "y"
+    playAudio(Bass_Band_Channel);
+else
+    %nothing
+end
 
 % End of the code
 fprintf('Processing complete. All stages executed and signals saved.\n');

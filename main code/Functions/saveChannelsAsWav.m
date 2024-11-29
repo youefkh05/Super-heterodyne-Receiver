@@ -1,4 +1,4 @@
-function saveChannelsAsWav(channels, filename, savePath)
+function [Channels_Out]=saveChannelsAsWav(channels, filename, savePath)
     % Function to save each audio channel as a .wav file in a specified directory
     % Parameters:
     %   channels  - Array of AudioFile objects (audio channels)
@@ -12,11 +12,14 @@ function saveChannelsAsWav(channels, filename, savePath)
         mkdir(savePath);
     end
     
+    Channels_Out=channels;
+    
     % Loop through each AudioFile object in the channels array
     for i = 1:length(channels)
         % Create the output filename for each channel (e.g., 'audio_data_1.wav')
         outputFilename = fullfile(savePath, sprintf('%s_%d.wav', filename, i));
-        channels(i).Filename=outputFilename;
+        
+        Channels_Out(i).Filename=outputFilename;
         
         % Get the audio data and sampling frequency from the AudioFile object
         samplingFreq = ceil(1000*channels(i).SamplingFrequency);
@@ -37,6 +40,8 @@ function saveChannelsAsWav(channels, filename, savePath)
         
         % Save the audio data to a .wav file
         audiowrite(outputFilename, audioData, samplingFreq);
+        
+        Channels_Out(i).player=audioplayer(audioData, samplingFreq);
         
         % Display a message indicating the file was saved
         fprintf('Saved %s\n', outputFilename);
