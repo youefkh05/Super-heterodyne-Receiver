@@ -38,7 +38,6 @@ channels = padAudioFiles(channels, maxLength, maxSamplingFreq);
 %plot them and get the bandwidth 
 %we multiplay it by 7 to get more than the Nyquist frequency for safety
 Total_BW=7*plotChannelSpectrum(channels,"Channel",1);
-pause(5);
 
 % Display total bandwidth across all channels
 fprintf('Total Bandwidth: %.2f kHz\n', Total_BW);
@@ -57,7 +56,7 @@ end
 saveChannelsAsWav(channels, "ch_pad", "Channels\Padded");
 
 %plot the padded signals
-plotChannelSpectrum(channels,"Channel",1);
+plotChannelSpectrum(channels,"Padded Channel",1);
 
 %AM Modulate (DSB-SC)
 AM_Modulated_Signal = AM_Modulate_DSB_SC(channels, maxLength, maxSamplingFreq );
@@ -83,10 +82,10 @@ saveChannelsAsWav(AM_Modulated_Signal, "ch_AM", "Channels\AM");
 plotChannelSpectrum(AM_Modulated_Signal,"AM DSB SC",0);
 
 % Filter parameters
-Fc = 100e3 ;            % Carrier frequency (Hz)
-fDelta=50e3;            % Channels Distance
-Fs=ceil(1000*maxSamplingFreq);
-Channel_BandWidth = 40e3;         % Bandwidth (Hz)
+Fc = 100e3 ;                        % Carrier frequency (Hz)
+fDelta=50e3;                        % Channels Distance
+Fs=ceil(1000*maxSamplingFreq);      % Sampling Frequency
+Channel_BandWidth = 40e3;           % Bandwidth (Hz)
 
 % Signals Parameters
 maxChannelNumber = length(channels);
@@ -105,18 +104,11 @@ if RF_Filter == "y"
     % Visualize the new filter
     fprintf('You selected Channel %d with carrier frequency %.1f kHz.\n', ChannelNumber, Channel_Frequency / 1e3);
     
-     
+    %Plot the frequency response of RF Bandpass Filter
     plotFilter(RF_BPF, Fs, "Frequency Response of RF Bandpass Filter");
-
 else
     AM_Modulated_Signal_RF_Filter = AM_Modulated_Signal;
 end
-
-%Plot And save the Filter AM Modulate (DSB-SC) Signal
-plotChannelSpectrum(AM_Modulated_Signal_RF_Filter);
-saveChannelsAsWav(AM_Modulated_Signal_RF_Filter, "ch_RF_Filter", "Channels\RF");
-
-return;
 
 %IF Stage
 WIF = 25e3;  %   25kHz as intended
@@ -141,23 +133,22 @@ end
 [IF_Channel_Filtered,IF_BPF]      =   ...
     if_stage(IF_Channel, WIF,Channel_BandWidth,Fs);
 
-% Frequency response for IF Band Pass Fileter
-fvtool(IF_BPF); 
-
-%Plot and save the IF_Channel Signal
-plotChannelSpectrum(IF_Channel_Filtered);
-saveChannelsAsWav(IF_Channel_Filtered, "IF_Channel", "Channels\IF");
+%Plot the frequency response of IF Bandpass Filter
+plotFilter(IF_BPF, Fs, "Frequency Response of IF Bandpass Filter");
 
 %Bass Band Stage
 [Bass_Band_Channel, Bass_Band_Filter] = baseband_detection(IF_Channel_Filtered, WIF, Fs);
 
-% Frequency response for Bass_Band Low Pass Fileter
-fvtool(Bass_Band_Filter); 
+%Plot the frequency response of Bass_Band Low Pass Fileter
+plotFilter(Bass_Band_Filter, Fs, "Frequency Response of Bass Band Low Pass Filter");
 
-%Plot and save the Bass_Band_Channel Signal
-plotChannelSpectrum(Bass_Band_Channel);
+%Plot And save Receiver Signals
+plotReceiver(AM_Modulated_Signal_RF_Filter, IF_Channel_Filtered, Bass_Band_Channel);
+
+%Save as Wav
+saveChannelsAsWav(AM_Modulated_Signal_RF_Filter, "ch_RF_Filter", "Channels\RF");
+saveChannelsAsWav(IF_Channel_Filtered, "IF_Channel", "Channels\IF");
 saveChannelsAsWav(Bass_Band_Channel, "Bass_Band_Channel", "Channels\Bass_Band");
-
 
 % Remove added paths
 rmpath('Functions');
