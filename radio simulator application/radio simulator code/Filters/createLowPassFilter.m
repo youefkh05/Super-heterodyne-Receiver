@@ -13,7 +13,7 @@ function LPF = createLowPassFilter(Fc, Fs, FilterOrder)
     %   LPF - Designed low-pass filter object
     
     % Add the Filters folder to the MATLAB path temporarily (optional)
-    addpath('Filters');
+    %addpath('Filters');
     
     % Normalized cutoff frequency (relative to Nyquist frequency Fs/2)
     F3dB = Fc / (Fs / 2);

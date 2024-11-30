@@ -23,7 +23,7 @@ function varargout = audio_player(varargin)
 
 % Edit the above text to modify the response to help audio_player
 
-% Last Modified by GUIDE v2.5 30-Nov-2024 17:37:36
+% Last Modified by GUIDE v2.5 30-Nov-2024 18:18:55
 
 % Begin initialization code - DO NOISET EDIT
 gui_Singleton = 1;
@@ -84,13 +84,13 @@ global playm
 global file
 global path
 global closesavef
-%{
+
 % Add the Functions and Filters folder to the MATLAB path temporarily
 addpath('Functions');
 addpath('Functions\Audio player');
 addpath('Filters');
 load RF_Band_Pass_Filter; % Load predefined RF Band-Pass Filter
-%}
+
 
 closesavef=0;
 path="Channels\";
@@ -126,7 +126,7 @@ set(handles.rateb,'string',rate);
 set(handles.noiseb,'string',efact);
 set(handles.volb,'string',vfact);
 set(handles.volrb,'string',100);
-set(handles.receiverb,'string',"On standby");
+set(handles.receiverb,'string',"With RF filter");
 set(handles.vol,'value',0.5);
 set(handles.noise,'value',0.1);
 set(handles.saveb,'visible',"off");
@@ -140,6 +140,7 @@ set(handles.MSET,'visible',"off");
 set(handles.PSNRb,'string',PSNR);
 set(handles.PSNRb,'visible',"off");
 set(handles.PSNRT,'visible',"off");
+set(handles.RF_Filterb,'visible',"off");
 set(handles.receiverb,'visible',"off");
 set(handles.receiverT,'visible',"off");
 set(handles.returnb,'visible',"off");
@@ -498,6 +499,7 @@ set(handles.select,'visible',"on");
 set(handles.oradio,'visible',"on");
 set(handles.eradio,'visible',"on");
 set(handles.fradio,'visible',"on");
+set(handles.RF_Filterb,'visible',"off");
 set(handles.receiverb,'visible',"off");
 set(handles.receiverT,'visible',"off");
 set(handles.returnb,'visible',"off");
@@ -582,7 +584,7 @@ global fmr
 global omr
 pause(0.05);
 stop(fmr);
-stop(omr);
+%stop(omr);
 set(handles.dradio,'visible',"on");
 dread=1;
 end
@@ -648,6 +650,7 @@ set(handles.select,'visible',"off");
 set(handles.oradio,'visible',"off");
 set(handles.eradio,'visible',"off");
 set(handles.fradio,'visible',"off");
+set(handles.RF_Filterb,'visible',"on");
 set(handles.receiverb,'visible',"on");
 set(handles.receiverT,'visible',"on");
 set(handles.returnb,'visible',"on");
@@ -671,8 +674,9 @@ set(handles.Show_Filterb,'visible',"on");
 set(handles.Show_Channels_b,'visible',"on");
 set(handles.freqT,'visible',"on");
 set(handles.radio_slider,'visible',"on");
-set(handles.receiverb,'visible',"off");
-set(handles.receiverT,'visible',"off");
+set(handles.RF_Filterb,'visible',"on");
+set(handles.receiverb,'visible',"on");
+set(handles.receiverT,'visible',"on");
 
 % initialze the slider
 startfreq=50;
@@ -703,17 +707,21 @@ RF_flag = 1;
 
 %start the radio
 play(mc1);
+omr = mc1;
 Channel_Frequency_old=Channel_Frequency;
+RF_flag_old = RF_flag;
+set(handles.receiverb,'string',"With RF Filter");
 
 %exit when user want
 while dread==0
     dstate=0;
     radio_pos=mc1.CurrentSample;
     
-    % Check and handle frequency change
-    if Channel_Frequency_old ~= Channel_Frequency %frequency changed
+    % Check and handle frequency change or Flag change
+    if (Channel_Frequency_old ~= Channel_Frequency) || (RF_flag_old ~= RF_flag)
         
         Channel_Frequency_old = Channel_Frequency;
+        RF_flag_old = RF_flag;
         play(mcn);
         [mc1,yr1,Channel_Fs,radio_pos,AM_Modulated_Signal_RF_Filter, IF_Channel_Filtered, Bass_Band_Channel, RF_BPF, IF_BPF, Bass_Band_Filter] = ...
              change_radio_chanel(mc1,AM_Modulated_Signal,Channel_Frequency,Fs, RF_flag);
@@ -785,6 +793,19 @@ global Bass_Band_Channel                    % Bass band Channel
     
 end
 
+% --- Executes on button press in RF_Filterb.
+function RF_Filterb_Callback(hObject, eventdata, handles)
+% hObject    handle to RF_Filterb (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global RF_flag                              % RF Filter Flag
+    RF_flag = ~RF_flag;
+    if RF_flag == 1
+        set(handles.receiverb,'string',"With RF Filter");
+    else
+        set(handles.receiverb,'string',"No RF Filter");
+    end
+end
 
 % --- Executes on slider movement.
 function radio_slider_Callback(hObject, eventdata, handles)

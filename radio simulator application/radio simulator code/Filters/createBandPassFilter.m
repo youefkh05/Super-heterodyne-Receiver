@@ -13,7 +13,7 @@ function BPF = createBandPassFilter(Fc, Fs, DeltaF,FilterOrder)
     %   BPF - Designed band-pass filter object
     
     % Add the Functions and Filters folder to the MATLAB path temporarily
-    addpath('Filters');
+    %addpath('Filters');
     
     
     % Normalized frequency edges (relative to Nyquist frequency Fs/2)
