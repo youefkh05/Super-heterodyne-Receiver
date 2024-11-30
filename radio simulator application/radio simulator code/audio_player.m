@@ -589,59 +589,29 @@ function rradio_Callback(hObject, eventdata, handles)
 
 % Hint: get(hObject,'Value') returns toggle state of rradio
 global playm
-global om       %orignal music
-global omr      %orignal music received
-global em       %encrypted music
-global fm       %filtered music
-global fmr      %filtered music received
+global om                                   % orignal music
+global omr                                  % orignal music received
+global RF_flag                              % RF Filter Flag
+global em                                   % encrypted music
+global fm                                   % filtered music
+global fmr                                  % filtered music received
 global dstate
 global rstate
 global dread
-global Channel_Frequency    %user's desired
-global mc1      %chanel 1 FM
-global yr1      %y chanel 1
-global mc2      %chanel 2 FM
-global yr2      %y chanel 2
-global mc3      %chanel 3 FM
-global yr3      %y chanel 3
-global mc4      %chanel 4 FM
-global yr4      %y chanel 4
-global mc5      %chanel 1 AM
-global yr5      %y chanel 1
-global mc6      %chanel 2 AM
-global yr6      %y chanel 2
-global mc7      %chanel 3 AM
-global yr7      %y chanel 3
-global mc8      %chanel 4 AM
-global yr8      %y chanel 4
-global mn       %chanel noise
-global yn       %y chanel noise
-global choffset
+global Channel_Frequency                    % user's desired
+global mc1                                  % chanel 1 FM
+global yr1                                  % y chanel 1
+global AM_Modulated_Signal                  % AM Channel
+global AM_Modulated_Signal_RF_Filter        % AM Filtered Channel    
+global Bass_Band_Channel                    % Bass band Channel
+global RF_BPF                               % RF Bnad Pass Filter
+global IF_BPF                               % IF Bnad Pass Filter
+global Bass_Band_Filter                     % Bass band Low pass Filter
+global Fs                                   % radio sample requency
+
 %reading the chanels
-pause(0.05);
-%{
-[yr2,Channel_Frequency]=audioread("saved audio\chanel\ch2FMnormal.wav");
-mc2=audioplayer(yr2,Channel_Frequency);
-[yr3,Channel_Frequency]=audioread("saved audio\chanel\ch3FMDJ.wav");
-mc3=audioplayer(yr3,Channel_Frequency);
-[yr4,Channel_Frequency]=audioread("saved audio\chanel\ch4FMmotivation.wav");
-mc4=audioplayer(yr4,Channel_Frequency);
-[yr5,Channel_Frequency]=audioread("saved audio\chanel\ch1AMstory.wav");
-mc5=audioplayer(yr5,Channel_Frequency);
-[yr6,Channel_Frequency]=audioread("saved audio\chanel\ch2AMrelax.wav");
-mc6=audioplayer(yr6,Channel_Frequency);
-[yr7,Channel_Frequency]=audioread("saved audio\chanel\ch3AMnews.wav");
-mc7=audioplayer(yr7,Channel_Frequency);
-[yr8,Channel_Frequency]=audioread("saved audio\chanel\ch4AMrbaodcast.wav");
-mc8=audioplayer(yr8,Channel_Frequency);
-[yn,Channel_Frequency]=audioread("saved audio\chanel\noise.wav");
-mn=audioplayer(yn,Channel_Frequency);
-[yr1,Channel_Frequency]=audioread("saved audio\chanel\ch1FMreflection.wav");
-mc1=audioplayer(yr1,Channel_Frequency);
-%}
-Channel_Frequency=1;
-yr=yr1;
-omr=mc1;            %the default is chanel 1
+
+Channel_Frequency=100e3;
 
 pause(0.05);
 set(handles.dradio,'visible',"off");
@@ -698,122 +668,35 @@ set(handles.radio_slider,'visible',"on");
 set(handles.receiverb,'visible',"off");
 set(handles.receiverT,'visible',"off");
 
-startfreq=100;
-endfreq=500;
-freqoffset=0;
-set(handles.radioT1,'string',int2str(startfreq)+"MHz");
-set(handles.radioT2,'string',int2str(endfreq)+"MHz");
+% initialze the slider
+startfreq=50;
+endfreq=350;
+set(handles.radioT1,'string',int2str(startfreq)+" kHz");
+set(handles.radioT2,'string',int2str(endfreq)+" kHz");
+
+% get the radio signal
+[AM_Modulated_Signal, Fs] = get_AM_Signal("Channels\AM\AM_Modulated_Channel.mat");
+[yr1,Channel_Fs]=audioread( "Channels\Bass_Band\Bass_Band_Channel_1.wav");
+mc1=audioplayer(yr1,Channel_Fs);
 pause(0.05);
+
+% global variables handling
 rstate=1;
 stop(om);
 stop(em);
 stop(fm);
+playm=0;    %stop
+dread=0;
+RF_flag = 1;
 
+play(mc1);
+pause(5);
 
+[mc1,yr1,Channel_Fs,radio_pos,AM_Modulated_Signal_RF_Filter, Bass_Band_Channel, RF_BPF, IF_BPF, Bass_Band_Filter] = ...
+    change_radio_chanel(mc1,AM_Modulated_Signal,Channel_Frequency,Fs, RF_flag);
 
+play(mc1,radio_pos);
 
-
-end
-
-function [pos,ynew,fnew] = change_chanel(ch,old_ch,old_m)
-    global mc1      %chanel 1 FM
-    global yr1      %y chanel 1
-    global mc2      %chanel 2 FM
-    global yr2      %y chanel 2
-    global mc3      %chanel 3 FM
-    global yr3      %y chanel 3
-    global mc4      %chanel 4 FM
-    global yr4      %y chanel 4
-    global mc5      %chanel 1 AM
-    global yr5      %y chanel 1
-    global mc6      %chanel 2 AM
-    global yr6      %y chanel 2
-    global mc7      %chanel 3 AM
-    global yr7      %y chanel 3
-    global mc8      %chanel 4 AM
-    global yr8      %y chanel 4
-    global mn       %chanel noise
-    global yn       %y chanel noise
-    pause(old_m);
-    old_pos=old_m.CurrentSample;    %save the current position
-    if old_ch==0 %it was off
-        pause(0.05);
-    elseif old_ch==1
-        play(mc1,old_pos);
-        pause(0.05);
-        pause(mc1);
-    elseif old_ch==2
-        play(mc2,old_pos);
-        pause(0.05);
-        pause(mc2);
-    elseif old_ch==3
-        play(mc3,old_pos);
-        pause(0.05);
-        pause(mc3);
-    elseif old_ch==4
-        play(mc4,old_pos);
-        pause(0.05);
-        pause(mc4);
-    elseif old_ch==11
-        play(mc5,old_pos);
-        pause(0.05);
-        pause(mc5);
-    elseif old_ch==12
-        play(mc6,old_pos);
-        pause(0.05);
-        pause(mc6);
-    elseif old_ch==13
-        play(mc7,old_pos);
-        pause(0.05);
-        pause(mc7);
-    elseif old_ch==14
-        play(mc8,old_pos);
-        pause(0.05);
-        pause(mc8);
-    else
-        play(mn,old_pos);
-        pause(0.05);
-        pause(mn);
-    end
-
-  if ch==1
-    ynew=yr1;
-    fnew=mc1.SampleRate;
-    pos=mc1.CurrentSample;
-  elseif ch==2
-    ynew=yr2;
-    fnew=mc2.SampleRate;
-    pos=mc2.CurrentSample;
-  elseif ch==3
-    ynew=yr3;
-    fnew=mc3.SampleRate;
-    pos=mc3.CurrentSample;
-  elseif ch==4
-    ynew=yr4;
-    fnew=mc4.SampleRate;
-    pos=mc4.CurrentSample;
-  elseif ch==11
-    ynew=yr5;
-    fnew=mc5.SampleRate;
-    pos=mc5.CurrentSample;
-  elseif ch==12
-    ynew=yr6;
-    fnew=mc6.SampleRate;
-    pos=mc6.CurrentSample;
-  elseif ch==13
-    ynew=yr7;
-    fnew=mc7.SampleRate;
-    pos=mc7.CurrentSample;
-  elseif ch==14
-    ynew=yr8;
-    fnew=mc8.SampleRate;
-    pos=mc8.CurrentSample;
-  else
-    ynew=yn;
-    fnew=mn.SampleRate;
-    pos=mn.CurrentSample;
-  end
-   
 end
 
 

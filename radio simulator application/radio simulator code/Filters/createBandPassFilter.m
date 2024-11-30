@@ -32,7 +32,7 @@ function BPF = createBandPassFilter(Fc, Fs, DeltaF,FilterOrder)
     BPF = design(BPF_Spec, 'butter');
     
     % Save the filter for future use
-    save('Filters\RF_Band_Pass_Filter.mat', 'BPF_Spec', 'BPF');
+    %save('Filters\RF_Band_Pass_Filter.mat', 'BPF_Spec', 'BPF');
     disp('Band-pass filter successfully created and saved.');
     
     % Visualize the filter's frequency response (optional)

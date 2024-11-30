@@ -1,0 +1,23 @@
+function [pos,ynew,fnew] =change_radio_chanel(old_m,AM_Modulated_Signal,ch_freq,Fs, rf)
+
+    pause(old_m);
+    old_pos=old_m.CurrentSample;    %save the current position
+    % Correctly capture multiple outputs from the radio function
+    [AM_Modulated_Signal_RF_Filter, Bass_Band_Channel, RF_BPF, IF_BPF, Bass_Band_Filter] = ...
+        radio(AM_Modulated_Signal, ch_freq, Fs, rf);
+
+    [ynew,fnew]=audioread( "Channels\Bass_Band\Bass_Band_Channel_1.wav");
+    mc_new=audioplayer(ynew,fnew);
+   
+    
+        play(mn,old_pos);
+        pause(0.05);
+        pause(mn);
+
+
+    ynew=yn;
+    fnew=mn.SampleRate;
+    pos=mn.CurrentSample;
+
+   
+    end

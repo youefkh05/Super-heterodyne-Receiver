@@ -23,7 +23,7 @@ function varargout = audio_player(varargin)
 
 % Edit the above text to modify the response to help audio_player
 
-% Last Modified by GUIDE v2.5 30-Nov-2024 10:50:33
+% Last Modified by GUIDE v2.5 18-Jul-2024 19:01:29
 
 % Begin initialization code - DO NOISET EDIT
 gui_Singleton = 1;
@@ -83,15 +83,9 @@ global playm
 global file
 global path
 global closesavef
-% Add the Functions and Filters folder to the MATLAB path temporarily
-addpath('Functions');
-addpath('Functions\Audio player');
-addpath('Filters');
-load RF_Band_Pass_Filter; % Load predefined RF Band-Pass Filter
-
 closesavef=0;
-path="Channels\";
-file="Ch2_Short_BBCArabic2.wav";
+path="saved audio\";
+file="1orignal.wav";
 [oy,f]=audioread(path+file);
 efact=0.01;
 rate=1;
@@ -151,7 +145,7 @@ set(handles.freqT,'visible',"off");
 set(handles.radio_slider,'visible',"off");
 
 ah=axes('unit','normalized','position',[0 0 1 1]);
-bg=imread("radio_simulator_resources\audioLogo.jpg");
+bg=imread("The_9_Sines_audio_denoisng_resources\audioLogo.png");
 imagesc(bg);
 set(ah,'handlevisibility','off','visible','off');
 
@@ -395,6 +389,16 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 end
 
+% --- Executes on slider movement.
+function radio_slider_Callback(hObject, eventdata, handles)
+% hObject    handle to radio_slider (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'Value') returns position of slider
+%        get(hObject,'Min') and get(hObject,'Max') to determine range of slider
+end
+
 % --- Executes during object creation, after setting all properties.
 function radio_slider_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to radio_slider (see GCBO)
@@ -580,7 +584,6 @@ set(handles.dradio,'visible',"on");
 dread=1;
 end
 
-
 % --- Executes on button press in rradio.
 function rradio_Callback(hObject, eventdata, handles)
 % hObject    handle to rradio (see GCBO)
@@ -589,29 +592,55 @@ function rradio_Callback(hObject, eventdata, handles)
 
 % Hint: get(hObject,'Value') returns toggle state of rradio
 global playm
-global om                                   % orignal music
-global omr                                  % orignal music received
-global RF_flag                              % RF Filter Flag
-global em                                   % encrypted music
-global fm                                   % filtered music
-global fmr                                  % filtered music received
+global om       %orignal music
+global omr      %orignal music received
+global em       %encrypted music
+global fm       %filtered music
+global fmr      %filtered music received
 global dstate
 global rstate
 global dread
-global Channel_Frequency                    % user's desired
-global mc1                                  % chanel 1 FM
-global yr1                                  % y chanel 1
-global AM_Modulated_Signal                  % AM Channel
-global AM_Modulated_Signal_RF_Filter        % AM Filtered Channel    
-global Bass_Band_Channel                    % Bass band Channel
-global RF_BPF                               % RF Bnad Pass Filter
-global IF_BPF                               % IF Bnad Pass Filter
-global Bass_Band_Filter                     
-global Fs                                   %radio sample requency
-
+global mc1      %chanel 1 FM
+global yr1      %y chanel 1
+global mc2      %chanel 2 FM
+global yr2      %y chanel 2
+global mc3      %chanel 3 FM
+global yr3      %y chanel 3
+global mc4      %chanel 4 FM
+global yr4      %y chanel 4
+global mc5      %chanel 1 AM
+global yr5      %y chanel 1
+global mc6      %chanel 2 AM
+global yr6      %y chanel 2
+global mc7      %chanel 3 AM
+global yr7      %y chanel 3
+global mc8      %chanel 4 AM
+global yr8      %y chanel 4
+global mn       %chanel noise
+global yn       %y chanel noise
+global choffset
 %reading the chanels
-
-Channel_Frequency=1;
+pause(0.05);
+[yr2,fr]=audioread("saved audio\chanel\ch2FMnormal.wav");
+mc2=audioplayer(yr2,fr);
+[yr3,fr]=audioread("saved audio\chanel\ch3FMDJ.wav");
+mc3=audioplayer(yr3,fr);
+[yr4,fr]=audioread("saved audio\chanel\ch4FMmotivation.wav");
+mc4=audioplayer(yr4,fr);
+[yr5,fr]=audioread("saved audio\chanel\ch1AMstory.wav");
+mc5=audioplayer(yr5,fr);
+[yr6,fr]=audioread("saved audio\chanel\ch2AMrelax.wav");
+mc6=audioplayer(yr6,fr);
+[yr7,fr]=audioread("saved audio\chanel\ch3AMnews.wav");
+mc7=audioplayer(yr7,fr);
+[yr8,fr]=audioread("saved audio\chanel\ch4AMrbaodcast.wav");
+mc8=audioplayer(yr8,fr);
+[yn,fr]=audioread("saved audio\chanel\noise.wav");
+mn=audioplayer(yn,fr);
+[yr1,fr]=audioread("saved audio\chanel\ch1FMreflection.wav");
+mc1=audioplayer(yr1,fr);
+yr=yr1;
+omr=mc1;            %the default is chanel 1
 
 pause(0.05);
 set(handles.dradio,'visible',"off");
@@ -653,46 +682,261 @@ set(handles.volrT,'visible',"on");
 set(handles.volrb,'visible',"on");
 set(handles.persentT,'visible',"on");
 set(handles.chanelsT,'visible',"on");
-set(handles.freqT,'string',"Frequency (AM)");
-set(handles.chanelsT, 'String', {'Channels frequencies (AM):', ...
-                   '  100 kHz Channel 1 QuranPalestine', ...
-                   '  150 kHz Channel 2 FM9090   ', ...
-                   '  200 kHz Channel 3 BBCArabic2      ', ...
-                   '  250 kHz Channel 4 RussianVoice    ', ...
-                   '  300 kHz Channel 5 SkyNewsArabia '});
+set(handles.freqT,'string',"Frequency (FM)");
+set(handles.chanelsT, 'String', {'Channels frequencies (FM):', ...
+                   '  140MHz Channel 1 Reflection', ...
+                   '  248MHz Channel 2 Normal   ', ...
+                   '    356MHz Channel 3 DJ             ', ...
+                   '    462MHz Channel 4 Motivation '});
 set(handles.radioT1,'visible',"on");
 set(handles.radioT2,'visible',"on");
 set(handles.radiofb,'visible',"on");
 set(handles.freqT,'visible',"on");
 set(handles.radio_slider,'visible',"on");
-set(handles.receiverb,'visible',"off");
-set(handles.receiverT,'visible',"off");
-
-startfreq=50;
-endfreq=350;
-set(handles.radioT1,'string',int2str(startfreq)+" kHz");
-set(handles.radioT2,'string',int2str(endfreq)+" kHz");
-[AM_Modulated_Signal, Fs] = get_AM_Signal("Channels\AM\AM_Modulated_Channel.mat");
+startfreq=100;
+endfreq=500;
+freqoffset=0;
+set(handles.radioT1,'string',int2str(startfreq)+"MHz");
+set(handles.radioT2,'string',int2str(endfreq)+"MHz");
 pause(0.05);
 rstate=1;
 stop(om);
 stop(em);
 stop(fm);
+[fyr]=filter_audio(yr1,fr,0,1);
+fmr=audioplayer(fyr,fr);
 playm=0;    %stop
 dread=0;
-RF_flag = 1;
+mrpos=omr.CurrentSample;  %restart
+mr=0;       %which music is playing
+playmr=0;   %check if it is playing
+ch=1;       %default chanel
+old_ch=1;
+choffset=10;
+old_mapped=100;
+vol_in_mapped=100;
+slider=0;
+old_slider=0;
+frequency=140;
+set(handles.radiofb,'string',frequency+freqoffset);
+slider= ((frequency - 100) / (500 - 100)) * (1 - 0) + 0;
 
-[AM_Modulated_Signal, Fs] = get_AM_Signal("Channels\AM\AM_Modulated_Channel.mat");
-[yr1,Channel_Fs]=audioread( "Channels\Bass_Band\Bass_Band_Channel_1.wav");
-mc1=audioplayer(yr1,Channel_Fs);
-
-[mc1,yr1,Channel_Fs,AM_Modulated_Signal_RF_Filter, Bass_Band_Channel, RF_BPF, IF_BPF, Bass_Band_Filter] = ...
-    change_radio_chanel(mc1,AM_Modulated_Signal,Channel_Frequency,Fs, RF_flag);
-
-
+while old_slider~=floor(100*slider)
+    pause(0.01);    %change the volume smoothly
+    if old_slider>100*slider
+        old_slider=old_slider-1;
+    elseif old_slider<100*slider
+        old_slider=old_slider+1;
+    end
+        set(handles.radio_slider,'Value',old_slider/100);
 end
 
-function [pos,ynew,fnew] = change_chanel(ch,old_ch,old_m)
+ch=0;       %intial chanel
+old_ch=0;
+        
+if dstate==1
+    dread=0;
+    delete(instrfind);
+    arduino=serial('COM8','BaudRate',9600,'DataBits',8);
+    fopen(arduino);
+    set(handles.receiverb,'string',"On standby");
+    vol_in=513; %default value
+    while dread==0
+        dstate=0;
+        set(handles.dradio,'value',0);
+        mes=floor(0.15);   %default
+        %changing the chanels
+        if ch~=old_ch && ch~=0
+            [mrpos,yr,fr]=change_chanel(ch,old_ch,omr);
+            if old_ch==0
+                set(handles.receiverb,'string',"On standby");
+            end
+            omr=audioplayer(vol_in_mapped.*yr,fr);
+            [fyr]=filter_audio(yr,fr,0,1);
+            fmr=audioplayer(fyr,fr);
+            
+            if ch>=choffset
+                freqoffset=1000;
+                set(handles.radioT1,'string',int2str(startfreq+freqoffset)+"kHz");
+                set(handles.radioT2,'string',int2str(endfreq+freqoffset)+"kKHz");
+                set(handles.freqT,'string',"Frequency (AM)");
+                set(handles.chanelsT, 'String', {'Chanels frequencies (AM):', ...
+                   '1140kHz Chanel 1 Story', ...
+                   '1248kHz Chanel 2 Relax  ', ...
+                   '      1356kHz Chanel 3 News         ', ...
+                   '    1462kHz Chanel 4 Baodcast '});
+            else
+                freqoffset=0;
+                set(handles.radioT1,'string',int2str(startfreq+freqoffset)+"MHz");
+                set(handles.radioT2,'string',int2str(endfreq+freqoffset)+"MHz");
+                set(handles.freqT,'string',"Frequency (FM)");
+                set(handles.chanelsT, 'String', {'Channels frequencies (FM):', ...
+                   '  140MHz Channel 1 Reflection', ...
+                   '  248MHz Channel 2 Normal   ', ...
+                   '    356MHz Channel 3 DJ             ', ...
+                   '    462MHz Channel 4 Motivation '});
+            end
+            
+            if playmr==1    %we changed while playing
+                %we need to map: the min input is 100 max is 500, output is min=0 max=1
+                slider= ((frequency - 100) / (500 - 100)) * (1 - 0) + 0;
+                disp("play from change chanel\n");
+                pause(0.5);
+                if mr==1
+                    play(omr,mrpos);
+                elseif mr==2
+                    play(fmr,mrpos); 
+                end
+            end
+            frequency=chanel_map(ch);
+            set(handles.radiofb,'string',frequency+freqoffset);
+            slider= ((frequency - 100) / (500 - 100)) * (1 - 0) + 0;
+
+            while old_slider~=floor(100*slider)
+                pause(0.01);    %change the volume smoothly
+                if old_slider>100*slider
+                    old_slider=old_slider-1;
+                elseif old_slider<100*slider
+                  old_slider=old_slider+1;
+                end
+                set(handles.radio_slider,'Value',old_slider/100);
+            end
+
+        end
+        
+        while rem(mes,10)~=1 && rem(mes,10)~=2 && dread==0
+        pause(0.01);
+        mes=fscanf(arduino);
+        mes=floor(str2double(mes))
+        %mes=mes;
+        
+        if rem(mes,1000)==0 %off mode
+            mr=0;
+            playmr=0;
+            pause(0.05);
+            stop(mc1);
+            stop(mc2);
+            stop(mc3);
+            stop(mc4);
+            stop(mn);
+            stop(omr);
+            stop(fmr);
+            mrpos=omr.CurrentSample;
+        end
+        if mr==1
+            mrpos= omr.CurrentSample; 
+        elseif mr==2
+            mrpos= fmr.CurrentSample;
+        end
+        
+        old_vol=vol_in;
+        if isnan(mes)
+            vol_in=old_vol; %as it didn't change (steady state)
+        else
+            vol_in=floor(mes/1000);
+        end
+        %we need to map: the min input is 0 max is 1023, output min=0 max=2
+        vol_in_mapped= ((vol_in - 0) / (1023 - 0)) * (2 - 0) + 0;
+        if mrpos == 1 && playmr ==1
+            %it will loop
+            stop(omr);
+            stop(fmr);
+            mrpos=omr.CurrentSample; %to start again
+            disp("play from loop\n");
+            pause(0.5);
+            if mr==1
+                play(omr,mrpos); 
+            elseif mr==2
+                play(fmr,mrpos);
+            end
+        end
+        if (vol_in>old_vol+1 || vol_in<old_vol-1) && mr~=0  %it got changed while playing
+            pause(0.01);
+            if mr==1
+                mrpos= omr.CurrentSample;
+                pause(omr);
+            elseif mr==2
+                mrpos= fmr.CurrentSample;
+                pause(fmr);
+            end
+            omr=audioplayer(vol_in_mapped.*yr,fr);
+            [fyr]=filter_audio(vol_in_mapped.*yr,fr,0,1);
+            fmr=audioplayer(fyr,fr);
+            disp("play from change volume\n");
+            pause(0.5);
+            if mr==1
+                play(omr,mrpos);
+            elseif mr==2
+                play(fmr,mrpos);
+            end
+        end
+        
+        while old_mapped~=floor(100*vol_in_mapped)
+        pause(0.01);    %change the volume smoothly
+        if     old_mapped>100*vol_in_mapped
+            old_mapped=old_mapped-1;
+        elseif old_mapped<100*vol_in_mapped
+            old_mapped=old_mapped+1;
+        end
+        set(handles.volrb,'string',old_mapped);
+        end
+        
+        old_mapped=floor(100*vol_in_mapped);
+
+        old_ch=ch;
+
+        if isnan(mes)
+            ch=old_ch; %as it didn't change (steady state)
+        else
+            ch=floor(rem(mes,1000)/10);
+        end
+        if ch~=old_ch || ch==0
+            break;
+        end
+        
+        end
+        
+        if ch==0 %it is off
+            set(handles.receiverb,'string',"Off");
+            continue;
+        end
+        pause(0.01);
+        if mr==1
+            mrpos= omr.CurrentSample; 
+        elseif mr==2
+            mrpos= fmr.CurrentSample;
+        end
+
+        if rem(mes,10) ==1 && mr~=1
+            mr=1;
+            playmr=1;
+            set(handles.receiverb,'string',"Recevied");
+            disp("play from change mode\n");
+            pause(0.5);
+            pause(fmr);
+            play(omr,mrpos);
+        else if rem(mes,10)==2 && mr~=2
+            mr=2;
+            playmr=1;
+            set(handles.receiverb,'string',"Filtered");
+            disp("play from change mode\n");
+            pause(0.5);
+            pause(omr);
+            play(fmr,mrpos); 
+            end
+        end
+    end
+end
+% Call the rradio_Callback function
+stop(fmr);
+stop(omr);
+%fclose(arduino);
+if dread==1
+dradio_Callback(handles.rradio, eventdata, handles);
+end
+end
+
+    function [pos,ynew,fnew] = change_chanel(ch,old_ch,old_m)
     global mc1      %chanel 1 FM
     global yr1      %y chanel 1
     global mc2      %chanel 2 FM
@@ -791,34 +1035,42 @@ function [pos,ynew,fnew] = change_chanel(ch,old_ch,old_m)
     pos=mn.CurrentSample;
   end
    
-end
-
-
-% --- Executes on slider movement.
-function radio_slider_Callback(hObject, eventdata, handles)
-% hObject    handle to radio_slider (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'Value') returns position of slider
-%        get(hObject,'Min') and get(hObject,'Max') to determine range of slider
-global Channel_Frequency    %user's desired
-
-   slider_read=get(hObject,'Value');    %slider read
-
-   %{
-    we need to map as 
-    the min input is 0 max is 1, 
-    output min=50e3  max=350e3
-   %}
-   Channel_Frequency=((slider_read-0)/1)*(350e3-50e3)+50e3;
+    end
    
-   disp(Channel_Frequency);
-    
-   pause(0.5);
-   
-end
-
+    function [f] = chanel_map(ch)
+        global choffset
+        %{
+        the map:
+        ch=1 f=140
+        ch=2 f=248
+        ch=3 f=356
+        ch=4 f=462
+        ch=5 f=204
+        ch=6 f=292
+        ch=7 f=410
+        %}
+        if ch>choffset
+            ch_mapped=ch-choffset;
+        else
+            ch_mapped=ch;
+        end
+        f=140;
+        if ch_mapped==1
+            f=140;
+        elseif ch_mapped==2
+            f=248;
+        elseif ch_mapped==3
+            f=356;
+        elseif ch_mapped==4
+            f=462;
+        elseif ch_mapped==5
+            f=204;
+        elseif ch_mapped==6
+            f=292;
+        elseif ch_mapped==7
+            f=410;
+        end
+    end
 
 % --- Executes on button press in oradio.
 function oradio_Callback(hObject, eventdata, handles)

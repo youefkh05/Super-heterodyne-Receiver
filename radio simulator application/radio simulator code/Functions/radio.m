@@ -43,10 +43,10 @@ function [AM_Modulated_Signal_RF_Filter, Bass_Band_Channel, RF_BPF, IF_BPF, Bass
     %plotFilter(Bass_Band_Filter, Fs, "Frequency Response of Bass Band Low Pass Filter");
     
     % Step 5: Save and Visualize Receiver Signals
-    plotReceiver(AM_Modulated_Signal_RF_Filter, IF_Channel_Filtered, Bass_Band_Channel);
+    %plotReceiver(AM_Modulated_Signal_RF_Filter, IF_Channel_Filtered, Bass_Band_Channel);
     
     % Save signals as WAV files
-    AM_Modulated_Signal_RF_Filter = saveChannelsAsWav(AM_Modulated_Signal_RF_Filter, "ch_RF_Filter", "Channels\RF");
-    IF_Channel_Filtered = saveChannelsAsWav(IF_Channel_Filtered, "IF_Channel", "Channels\IF");
+    %AM_Modulated_Signal_RF_Filter = saveChannelsAsWav(AM_Modulated_Signal_RF_Filter, "ch_RF_Filter", "Channels\RF");
+    %IF_Channel_Filtered = saveChannelsAsWav(IF_Channel_Filtered, "IF_Channel", "Channels\IF");
     Bass_Band_Channel = saveChannelsAsWav(Bass_Band_Channel, "Bass_Band_Channel", "Channels\Bass_Band");
 end
