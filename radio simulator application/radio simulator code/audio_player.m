@@ -85,12 +85,13 @@ global file
 global path
 global closesavef
 
+%{
 % Add the Functions and Filters folder to the MATLAB path temporarily
 addpath('Functions');
 addpath('Functions\Audio player');
 addpath('Filters');
 load RF_Band_Pass_Filter; % Load predefined RF Band-Pass Filter
-
+%}
 
 closesavef=0;
 path="Channels\";
@@ -157,7 +158,7 @@ set(handles.freqT,'visible',"off");
 set(handles.radio_slider,'visible',"off");
 
 ah=axes('unit','normalized','position',[0 0 1 1]);
-bg=imread("radio_simulator_resources\audioLogo.jpg");
+bg=imread("audio_player_resources\audioLogo.jpg");
 imagesc(bg);
 set(ah,'handlevisibility','off','visible','off');
 
