@@ -1,5 +1,5 @@
 <deployment-project plugin="plugin.ezdeploy" plugin-version="1.0">
-  <configuration file="D:\project\Communication Radio\Super-heterodyne-Receiver\radio simulator application\radio simulator code\audio_player.prj" location="D:\project\Communication Radio\Super-heterodyne-Receiver\radio simulator application\radio simulator code" name="audio_player" target="target.ezdeploy.standalone" target-name="Application Compiler">
+  <configuration build-checksum="3668508329" file="D:\project\Communication Radio\Super-heterodyne-Receiver\radio simulator application\radio simulator code\audio_player.prj" location="D:\project\Communication Radio\Super-heterodyne-Receiver\radio simulator application\radio simulator code" name="audio_player" preferred-package-location="D:\project\Communication Radio\Super-heterodyne-Receiver\radio simulator application\radio simulator code\audio_player\for_redistribution" preferred-package-type="package.type.exe" target="target.ezdeploy.standalone" target-name="Application Compiler">
     <param.appname>audio_player</param.appname>
     <param.icon>${PROJECT_ROOT}\audio_player_resources\icon.ico</param.icon>
     <param.icons>
@@ -124,11 +124,6 @@
     <fileset.package />
     <fileset.depfun>
       <file>${PROJECT_ROOT}\audio_player.fig</file>
-      <file>${PROJECT_ROOT}\Functions\Audio player\encrypt_audio.m</file>
-      <file>${PROJECT_ROOT}\Functions\Audio player\filter_audio.m</file>
-      <file>${PROJECT_ROOT}\Functions\Audio player\FIR_filter.m</file>
-      <file>${PROJECT_ROOT}\Functions\Audio player\IIR_filter.m</file>
-      <file>${PROJECT_ROOT}\Functions\Audio player\wavelet_filter.m</file>
     </fileset.depfun>
     <build-deliverables>
       <file location="${PROJECT_ROOT}\audio_player\for_testing" name="audio_player.exe" optional="false">D:\project\Communication Radio\Super-heterodyne-Receiver\radio simulator application\radio simulator code\audio_player\for_testing\audio_player.exe</file>

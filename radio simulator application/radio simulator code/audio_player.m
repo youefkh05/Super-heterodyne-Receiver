@@ -150,6 +150,8 @@ set(handles.chanelsT,'visible',"off");
 set(handles.radioT1,'visible',"off");
 set(handles.radioT2,'visible',"off");
 set(handles.radiofb,'visible',"off");
+set(handles.Show_Filterb,'visible',"off");
+set(handles.Show_Channels_b,'visible',"off");
 set(handles.freqT,'visible',"off");
 set(handles.radio_slider,'visible',"off");
 
@@ -506,6 +508,8 @@ set(handles.chanelsT,'visible',"off");
 set(handles.radioT1,'visible',"off");
 set(handles.radioT2,'visible',"off");
 set(handles.radiofb,'visible',"off");
+set(handles.Show_Filterb,'visible',"off");
+set(handles.Show_Channels_b,'visible',"off");
 set(handles.freqT,'visible',"off");
 set(handles.radio_slider,'visible',"off");
 if rstate==1 
@@ -663,11 +667,9 @@ set(handles.chanelsT, 'String', {'Channels frequencies (AM):', ...
 set(handles.radioT1,'visible',"on");
 set(handles.radioT2,'visible',"on");
 set(handles.radiofb,'visible',"on");
-set(handles.freqT,'visible',"on");
 set(handles.Show_Filterb,'visible',"on");
 set(handles.Show_Channels_b,'visible',"on");
-
-
+set(handles.freqT,'visible',"on");
 set(handles.radio_slider,'visible',"on");
 set(handles.receiverb,'visible',"off");
 set(handles.receiverT,'visible',"off");
@@ -679,11 +681,14 @@ endfreq=350;
 set(handles.radioT1,'string',int2str(startfreq)+" kHz");
 set(handles.radioT2,'string',int2str(endfreq)+" kHz");
 set(handles.radiofb,'string',int2str(Channel_Frequency/1e3));
+set(handles.radio_slider,'Value',0.16);
 
 % get the radio signal
 [AM_Modulated_Signal, Fs] = get_AM_Signal("Channels\AM\AM_Modulated_Channel.mat");
-[yr1,Channel_Fs]=audioread( "Channels\Ch0_Short_QuranPalestine.wav");
+[yr1,Channel_Fs] = audioread( "Channels\Ch0_Short_QuranPalestine.wav");
+[yn, Fsn] = audioread( "Channels\noise.wav");
 mc1=audioplayer(yr1,Channel_Fs);
+mcn=audioplayer(yn/2,Fsn);
 fmr = mc1 ;
 pause(0.05);
 
@@ -707,11 +712,13 @@ while dread==0
     
     % Check and handle frequency change
     if Channel_Frequency_old ~= Channel_Frequency %frequency changed
+        
         Channel_Frequency_old = Channel_Frequency;
+        play(mcn);
         [mc1,yr1,Channel_Fs,radio_pos,AM_Modulated_Signal_RF_Filter, IF_Channel_Filtered, Bass_Band_Channel, RF_BPF, IF_BPF, Bass_Band_Filter] = ...
              change_radio_chanel(mc1,AM_Modulated_Signal,Channel_Frequency,Fs, RF_flag);
         play(mc1,radio_pos);
-        plotFilter(Bass_Band_Filter, Fs, "Frequency Response of Bass Band Low Pass Filter");
+        stop(mcn);
         
     end % if Channel_Frequency_old ~= Channel_Frequency
     
@@ -744,6 +751,21 @@ function Show_Filterb_Callback(hObject, eventdata, handles)
 % hObject    handle to Show_Filterb (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+
+global RF_BPF                               % RF Bnad Pass Filter
+global IF_BPF                               % IF Bnad Pass Filter
+global Bass_Band_Filter                     % Bass band Low pass Filter
+global Fs                                   % radio sample requency
+
+    %Plot the frequency response of RF Bandpass Filter
+    plotFilter(RF_BPF, Fs, "Frequency Response of RF Bandpass Filter");
+
+    %Plot the frequency response of IF Bandpass Filter
+    plotFilter(IF_BPF, Fs, "Frequency Response of IF Bandpass Filter");
+
+    %Plot the frequency response of Bass_Band Low Pass Fileter
+    plotFilter(Bass_Band_Filter, Fs, "Frequency Response of Bass Band Low Pass Filter");
+
 end
 
 % --- Executes on button press in Show_Channels_b.
@@ -751,6 +773,16 @@ function Show_Channels_b_Callback(hObject, eventdata, handles)
 % hObject    handle to Show_Channels_b (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+
+
+global AM_Modulated_Signal_RF_Filter        % AM Filtered Channel  
+global IF_Channel_Filtered                  % IF Filtered Channel 
+global Bass_Band_Channel                    % Bass band Channel
+
+
+    %  Visualize Receiver Signals
+    plotReceiver(AM_Modulated_Signal_RF_Filter, IF_Channel_Filtered, Bass_Band_Channel);
+    
 end
 
 
