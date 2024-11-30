@@ -23,7 +23,7 @@ function varargout = audio_player(varargin)
 
 % Edit the above text to modify the response to help audio_player
 
-% Last Modified by GUIDE v2.5 30-Nov-2024 10:50:33
+% Last Modified by GUIDE v2.5 30-Nov-2024 17:37:36
 
 % Begin initialization code - DO NOISET EDIT
 gui_Singleton = 1;
@@ -42,6 +42,7 @@ if nargout
 else
     gui_mainfcn(gui_State, varargin{:});
 end
+
 end
 % End initialization code - DO NOISET EDIT
 
@@ -83,11 +84,13 @@ global playm
 global file
 global path
 global closesavef
+%{
 % Add the Functions and Filters folder to the MATLAB path temporarily
 addpath('Functions');
 addpath('Functions\Audio player');
 addpath('Filters');
 load RF_Band_Pass_Filter; % Load predefined RF Band-Pass Filter
+%}
 
 closesavef=0;
 path="Channels\";
@@ -602,16 +605,13 @@ global Channel_Frequency                    % user's desired
 global mc1                                  % chanel 1 FM
 global yr1                                  % y chanel 1
 global AM_Modulated_Signal                  % AM Channel
-global AM_Modulated_Signal_RF_Filter        % AM Filtered Channel    
+global AM_Modulated_Signal_RF_Filter        % AM Filtered Channel  
+global IF_Channel_Filtered                  % IF Filtered Channel  
 global Bass_Band_Channel                    % Bass band Channel
 global RF_BPF                               % RF Bnad Pass Filter
 global IF_BPF                               % IF Bnad Pass Filter
 global Bass_Band_Filter                     % Bass band Low pass Filter
 global Fs                                   % radio sample requency
-
-%reading the chanels
-
-Channel_Frequency=100e3;
 
 pause(0.05);
 set(handles.dradio,'visible',"off");
@@ -664,20 +664,27 @@ set(handles.radioT1,'visible',"on");
 set(handles.radioT2,'visible',"on");
 set(handles.radiofb,'visible',"on");
 set(handles.freqT,'visible',"on");
+set(handles.Show_Filterb,'visible',"on");
+set(handles.Show_Channels_b,'visible',"on");
+
+
 set(handles.radio_slider,'visible',"on");
 set(handles.receiverb,'visible',"off");
 set(handles.receiverT,'visible',"off");
 
 % initialze the slider
 startfreq=50;
+Channel_Frequency=100e3;
 endfreq=350;
 set(handles.radioT1,'string',int2str(startfreq)+" kHz");
 set(handles.radioT2,'string',int2str(endfreq)+" kHz");
+set(handles.radiofb,'string',int2str(Channel_Frequency/1e3));
 
 % get the radio signal
 [AM_Modulated_Signal, Fs] = get_AM_Signal("Channels\AM\AM_Modulated_Channel.mat");
-[yr1,Channel_Fs]=audioread( "Channels\Bass_Band\Bass_Band_Channel_1.wav");
+[yr1,Channel_Fs]=audioread( "Channels\Ch0_Short_QuranPalestine.wav");
 mc1=audioplayer(yr1,Channel_Fs);
+fmr = mc1 ;
 pause(0.05);
 
 % global variables handling
@@ -689,14 +696,61 @@ playm=0;    %stop
 dread=0;
 RF_flag = 1;
 
+%start the radio
 play(mc1);
-pause(5);
+Channel_Frequency_old=Channel_Frequency;
 
-[mc1,yr1,Channel_Fs,radio_pos,AM_Modulated_Signal_RF_Filter, Bass_Band_Channel, RF_BPF, IF_BPF, Bass_Band_Filter] = ...
-    change_radio_chanel(mc1,AM_Modulated_Signal,Channel_Frequency,Fs, RF_flag);
+%exit when user want
+while dread==0
+    dstate=0;
+    radio_pos=mc1.CurrentSample;
+    
+    % Check and handle frequency change
+    if Channel_Frequency_old ~= Channel_Frequency %frequency changed
+        Channel_Frequency_old = Channel_Frequency;
+        [mc1,yr1,Channel_Fs,radio_pos,AM_Modulated_Signal_RF_Filter, IF_Channel_Filtered, Bass_Band_Channel, RF_BPF, IF_BPF, Bass_Band_Filter] = ...
+             change_radio_chanel(mc1,AM_Modulated_Signal,Channel_Frequency,Fs, RF_flag);
+        play(mc1,radio_pos);
+        plotFilter(Bass_Band_Filter, Fs, "Frequency Response of Bass Band Low Pass Filter");
+        
+    end % if Channel_Frequency_old ~= Channel_Frequency
+    
+    % Reset radio if necessary
+    if  radio_pos == 1 % Needs reset
+        play(mc1);
+    end % if  radio_pos == 1
+    
+    % Allow GUI to update
+    drawnow;
+    
+    % Add a small pause to avoid excessive CPU usage
+    pause(0.02);
+    
+end %   while dread==0
 
-play(mc1,radio_pos);
+% Call the rradio_Callback function
+stop(mc1);
+stop(fmr);
+stop(omr);
 
+if dread==1
+    dradio_Callback(handles.rradio, eventdata, handles);
+end
+
+end
+
+% --- Executes on button press in Show_Filterb.
+function Show_Filterb_Callback(hObject, eventdata, handles)
+% hObject    handle to Show_Filterb (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+end
+
+% --- Executes on button press in Show_Channels_b.
+function Show_Channels_b_Callback(hObject, eventdata, handles)
+% hObject    handle to Show_Channels_b (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
 end
 
 
@@ -717,11 +771,13 @@ global Channel_Frequency    %user's desired
     the min input is 0 max is 1, 
     output min=50e3  max=350e3
    %}
-   Channel_Frequency=((slider_read-0)/1)*(350e3-50e3)+50e3;
+   Channel_Frequency =((slider_read-0)/1)*(350e3-50e3)+50e3;
    
-   disp(Channel_Frequency);
-    
-   pause(0.5);
+   % map the frequency
+   Channel_Frequency = map_radio_frequency(Channel_Frequency);  
+   
+   % display the frequency
+   set(handles.radiofb,'string',int2str(Channel_Frequency/1e3));
    
 end
 

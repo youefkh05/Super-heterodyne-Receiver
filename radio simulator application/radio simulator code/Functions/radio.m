@@ -1,4 +1,4 @@
-function [AM_Modulated_Signal_RF_Filter, Bass_Band_Channel, RF_BPF, IF_BPF, Bass_Band_Filter] = radio(AM_Modulated_Signal, channel_frequency, Fs, RF_flag)
+function [AM_Modulated_Signal_RF_Filter,IF_Channel_Filtered, Bass_Band_Channel, RF_BPF, IF_BPF, Bass_Band_Filter] = radio(AM_Modulated_Signal, channel_frequency, Fs, RF_flag)
     % Function to simulate a radio receiver with stages for RF, IF, and Baseband
     % Inputs:
     %   AM_Modulated_Signal - Input AM modulated signal
